@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">UkrainianBanknoteViewer</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="main_btn_search">Почати</string>
+    <string name="main_btn_info">Інфо</string>
+    <string name="main_btn_exit">Вихід</string>
+    <string name="search_filter">Фільтри</string>
+</resources>
