@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/teal_200"
+    android:background="#0A093C"
     android:gravity="center|bottom"
     android:orientation="vertical"
     tools:context=".fragments.FragmentInfo">
@@ -20,7 +20,7 @@
         android:layout_marginBottom="175dp"
         android:gravity="center_horizontal"
         android:text="@string/info_text"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:textSize="20sp" />
 
 </LinearLayout>

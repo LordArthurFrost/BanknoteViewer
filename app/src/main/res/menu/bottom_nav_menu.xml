@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_random"
+        android:icon="@drawable/ic_outline_all_inclusive_24"
+        android:title="@string/bottom_nav_random" />
+
+    <item
+        android:id="@+id/nav_catalogue"
+        android:icon="@drawable/ic_baseline_apps_24"
+        android:title="@string/bottom_nav_catalogue" />
+
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="@string/bottom_nav_search" />
+
+    <item
+        android:id="@+id/nav_info"
+        android:icon="@drawable/ic_outline_info_24"
+        android:title="@string/bottom_nav_info" />
+</menu>

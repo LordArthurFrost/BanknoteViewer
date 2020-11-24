@@ -39,25 +39,15 @@ public class DataBaseManager extends SQLiteOpenHelper
     }*/
 
 
-
-
-
-
-
-
-
-
-
-
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-    //NULL
+        //NULL
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
-    //NULL
+        //NULL
     }
 }
