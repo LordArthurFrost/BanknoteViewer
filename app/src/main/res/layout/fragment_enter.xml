@@ -6,7 +6,7 @@
     android:background="@color/teal_200"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".fragments.EnterFragment">
+    tools:context=".fragments.FragmentEnter">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,29 +27,21 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btnstart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#0037FF"
-            android:padding="10dp"
+            android:id="@+id/btnmainstart"
+            style="@style/Buttons"
             android:text="@string/main_btn_search" />
 
         <Button
-            android:id="@+id/btninfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/btnmaininfo"
+            style="@style/Buttons"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
-            android:backgroundTint="#0037FF"
-            android:padding="10dp"
+
             android:text="@string/main_btn_info" />
 
         <Button
-            android:id="@+id/btnexit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#0037FF"
-            android:padding="10dp"
+            android:id="@+id/btnmainexit"
+            style="@style/Buttons"
             android:text="@string/main_btn_exit" />
     </LinearLayout>
 

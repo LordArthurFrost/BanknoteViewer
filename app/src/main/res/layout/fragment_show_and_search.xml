@@ -3,10 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="3dp"
     android:background="@color/teal_200"
     android:orientation="vertical"
-    tools:context=".fragments.ShowAndSearchFragment">
+    tools:context=".fragments.FragmentShowAndSearch">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,14 +25,12 @@
                 <AutoCompleteTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="5" />
+                    android:layout_weight="5"
+                    android:hint="Введіть щось" />
 
                 <Button
                     android:id="@+id/btnsearchfilter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#0037FF"
-                    android:padding="10dp"
+                    style="@style/Buttons"
                     android:text="@string/search_filter" />
             </LinearLayout>
 
@@ -47,22 +44,31 @@
 
                 <Button
                     android:id="@+id/btnsearch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#0037FF"
-                    android:padding="10dp"
+                    style="@style/Buttons"
                     android:text="@string/main_btn_search" />
 
 
             </LinearLayout>
 
+            <!--Вывод из бд-->
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
-                --Здесь будет вывод краткой инфорации из бд
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
         </LinearLayout>

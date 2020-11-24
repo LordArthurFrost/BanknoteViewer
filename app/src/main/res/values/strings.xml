@@ -6,4 +6,6 @@
     <string name="main_btn_info">Інфо</string>
     <string name="main_btn_exit">Вихід</string>
     <string name="search_filter">Фільтри</string>
+    <string name="info_text">This application was created by the Student of National University Zaporizhzhia Polytechnic <br/>Arthur LordArthurFrost Moroz.</string>
+    <string name="info_back">Повернутись</string>
 </resources>

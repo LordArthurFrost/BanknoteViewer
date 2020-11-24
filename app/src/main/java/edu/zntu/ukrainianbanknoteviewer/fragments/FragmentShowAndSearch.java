@@ -10,12 +10,13 @@ import android.view.ViewGroup;
 
 import edu.zntu.ukrainianbanknoteviewer.R;
 
-public class FragmentInfo extends Fragment
+
+public class FragmentShowAndSearch extends Fragment
 {
-    private FragmentEnter fragmentEnter;
+    private FragmentShowBanknote fragmentShowBanknote;
     private View view;
 
-    public FragmentInfo()
+    public FragmentShowAndSearch()
     {
         // Required empty public constructor
     }
@@ -23,8 +24,7 @@ public class FragmentInfo extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        this.view = inflater.inflate(R.layout.fragment_info, container, false);
-        fragmentEnter = new FragmentEnter();
+        this.view =  inflater.inflate(R.layout.fragment_show_and_search, container, false);
         return view;
     }
 }
