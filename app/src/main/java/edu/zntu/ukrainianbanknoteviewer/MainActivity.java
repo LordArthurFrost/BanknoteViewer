@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import edu.zntu.ukrainianbanknoteviewer.fragments.*;
 import edu.zntu.ukrainianbanknoteviewer.managers.*;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -19,6 +20,8 @@ public class MainActivity extends AppCompatActivity
     FragmentShowBanknote fragmentShowBanknote;
     FragmentInfo fragmentInfo;
     private FragmentManager fm;
+    private DataBaseManager dataBaseManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,6 +33,8 @@ public class MainActivity extends AppCompatActivity
         fm = getSupportFragmentManager();
         FragmentHelper.init(fm, this);
         setNavigationBar();
+        FragmentHelper.openFragment(fragmentCatalogue);
+        dataBaseManager = new DataBaseManager(this);
     }
 
     public void setNavigationBar()
@@ -39,30 +44,24 @@ public class MainActivity extends AppCompatActivity
         fragmentShowAndSearch = new FragmentShowAndSearch();
         fragmentShowBanknote = new FragmentShowBanknote();
         BottomNavigationView bottomNavigationView = findViewById(R.id.main_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener()
-        {
-
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item)
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId())
             {
-                switch (item.getItemId())
-                {
-                    case R.id.nav_random:
-                        //Функция для генерирования случайного запроса
-                        // FragmentHelper.changeFragment(fragmentRandom);
-                        break;
-                    case R.id.nav_search:
-                        FragmentHelper.changeFragment(fragmentShowAndSearch);
-                        break;
-                    case R.id.nav_catalogue:
-                        FragmentHelper.changeFragment(fragmentCatalogue);
-                        break;
-                    case R.id.nav_info:
-                        FragmentHelper.changeFragment(fragmentInfo);
-                        break;
-                }
-                return true;
+                case R.id.nav_random:
+                    //Функция для генерирования случайного запроса
+                    // FragmentHelper.changeFragment(fragmentRandom);
+                    break;
+                case R.id.nav_search:
+                    FragmentHelper.changeFragment(fragmentShowAndSearch);
+                    break;
+                case R.id.nav_catalogue:
+                    FragmentHelper.changeFragment(fragmentCatalogue);
+                    break;
+                case R.id.nav_info:
+                    FragmentHelper.changeFragment(fragmentInfo);
+                    break;
             }
+            return true;
         });
     }
 }

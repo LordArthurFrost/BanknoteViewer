@@ -7,76 +7,78 @@
     android:orientation="vertical"
     tools:context=".fragments.FragmentShowAndSearch">
 
-    <ScrollView
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="8"
-                android:orientation="horizontal">
+            <AutoCompleteTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:backgroundTint="#ffffff"
+                android:hint="Введіть щось"
+                android:textColor="#ffffff"
+                android:textColorHint="#ffffff" />
 
-                <AutoCompleteTextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:hint="Введіть щось"
-                    android:backgroundTint="#ffffff"
-                    android:textColor="#ffffff"
-                    android:textColorHint="#ffffff" />
-
-                <Button
-                    android:id="@+id/btnsearchfilter"
-                    style="@style/Buttons"
-                    android:text="@string/search_filter" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/btnsearchfilter"
+                style="@style/Buttons"
+                android:text="@string/search_filter" />
+        </LinearLayout>
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                android:layout_weight="8"
-                android:gravity="center">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:gravity="center">
 
-                <Button
-                    android:id="@+id/btnsearchstart"
-                    style="@style/Buttons"
-                    android:text="@string/main_btn_search" />
+            <Button
+                android:id="@+id/btnsearchstart"
+                style="@style/Buttons"
+                android:text="@string/main_btn_search" />
 
-
-            </LinearLayout>
-
-            <!--Вывод из бд-->
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
 
         </LinearLayout>
-    </ScrollView>
+
+        <!--Вывод из бд-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="100">
+
+            <ListView
+                android:id="@+id/listshowandsearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+        <!-- <ImageView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content" />
+
+         <TextView
+             android:id="@+id/tvdenominationshowandsearch"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:textColor="@color/white" />
+
+         <TextView
+             android:id="@+id/tvprintyearshowandsearch"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:textColor="@color/white" />-->
+
+
+    </LinearLayout>
 
 
 </LinearLayout>
