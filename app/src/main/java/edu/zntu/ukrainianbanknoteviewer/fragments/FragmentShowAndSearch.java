@@ -27,6 +27,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     Cursor cursor;
     SimpleCursorAdapter simpleCursorAdapter;
     ListView listView;
+    ScrollView scrollView;
 
     public FragmentShowAndSearch()
     {
@@ -40,19 +41,26 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         btnFilters = view.findViewById(R.id.btnsearchfilter);
         btnSearch = view.findViewById(R.id.btnsearchstart);
         listView = view.findViewById(R.id.listshowandsearch);
+        scrollView = view.findViewById(R.id.scrollview);
         btnSearch.setOnClickListener(this);
         btnFilters.setOnClickListener(this);
         return view;
 
     }
 
+
+
     public void test()
     {
         cursor = DataBaseManager.check();
         String[] headers = new String[]{"denomination", "printYear"};
-        simpleCursorAdapter = new SimpleCursorAdapter(getContext(),android.R.layout.two_line_list_item, cursor, headers, new int[]{android.R.id.text1, android.R.id.text2},0);
+        simpleCursorAdapter = new SimpleCursorAdapter(getContext(), android.R.layout.two_line_list_item, cursor, headers, new int[]{android.R.id.text1, android.R.id.text2}, 0);
         listView.setAdapter(simpleCursorAdapter);
+        scrollView.scrollTo(0,0);
+
     }
+
+
 
     @Override
     public void onClick(View v)

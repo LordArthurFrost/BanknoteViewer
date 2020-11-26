@@ -40,8 +40,8 @@ public class DataBaseManager extends SQLiteOpenHelper
         cursor = sqLiteDatabase.rawQuery("select *" +
                 "from main", null);
         cursor.moveToFirst();
-        while(cursor.moveToNext())
-        Log.d("Database", cursor.getString(cursor.getColumnIndex("denomination")));
+        /*while(cursor.moveToNext())
+        Log.d("Database", cursor.getString(cursor.getColumnIndex("denomination")));*/
         return cursor;
     }
 
