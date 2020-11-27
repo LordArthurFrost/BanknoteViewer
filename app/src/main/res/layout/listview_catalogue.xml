@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#0E0C57"
+    android:orientation="horizontal"
+    android:gravity="center|top">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_folder_24" />
+
+    <TextView
+        android:layout_gravity="center"
+        android:id="@+id/lvcatalogueyear"
+        style="@style/lvtv" />
+
+</LinearLayout>
