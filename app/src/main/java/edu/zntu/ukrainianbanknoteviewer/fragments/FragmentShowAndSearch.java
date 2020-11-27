@@ -2,32 +2,40 @@ package edu.zntu.ukrainianbanknoteviewer.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
-import edu.zntu.ukrainianbanknoteviewer.MainActivity;
+import androidx.fragment.app.Fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.zntu.ukrainianbanknoteviewer.R;
+import edu.zntu.ukrainianbanknoteviewer.ShortBanknoteInfo;
 import edu.zntu.ukrainianbanknoteviewer.managers.DataBaseManager;
+import edu.zntu.ukrainianbanknoteviewer.managers.ShortBanknoteInfoAdapter;
 
 
 public class FragmentShowAndSearch extends Fragment implements View.OnClickListener
 {
     private FragmentShowBanknote fragmentShowBanknote;
     private View view;
+    private List<ShortBanknoteInfo> shortBanknoteInfoList;
     Button btnFilters, btnSearch;
-    DataBaseManager dataBaseManager;
     Cursor cursor;
     SimpleCursorAdapter simpleCursorAdapter;
+    AutoCompleteTextView autoCompleteTextView;
     ListView listView;
-    ScrollView scrollView;
+    ShortBanknoteInfoAdapter shortBanknoteInfoAdapter;
 
     public FragmentShowAndSearch()
     {
@@ -38,28 +46,55 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         this.view = inflater.inflate(R.layout.fragment_show_and_search, container, false);
+        shortBanknoteInfoList = new ArrayList<>();
         btnFilters = view.findViewById(R.id.btnsearchfilter);
         btnSearch = view.findViewById(R.id.btnsearchstart);
         listView = view.findViewById(R.id.listshowandsearch);
-        scrollView = view.findViewById(R.id.scrollview);
         btnSearch.setOnClickListener(this);
         btnFilters.setOnClickListener(this);
-        return view;
 
+
+        ArrayList<String> data = new ArrayList<>();
+        DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
+
+        return view;
     }
 
 
+  //  shortBanknoteInfoAdapter = new ShortBanknoteInfoAdapter(getContext(), R.layout.listview_banknote, )
+
+
+
+    //TODO
+    public void setAutoCompleteView(ArrayList<String> data)
+    {
+
+        this.autoCompleteTextView = view.findViewById(R.id.autoCompleteEditText);
+        autoCompleteTextView.setAdapter(new ArrayAdapter<>(getContext(), R.layout.custom_list_item, R.id.text_view_list_item, data));
+        autoCompleteTextView.setThreshold(1);
+        autoCompleteTextView.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if (actionId == EditorInfo.IME_ACTION_DONE)
+                {
+                    test();
+                }
+                return false;
+            }
+        });
+
+    }
 
     public void test()
     {
         cursor = DataBaseManager.check();
         String[] headers = new String[]{"denomination", "printYear"};
-        simpleCursorAdapter = new SimpleCursorAdapter(getContext(), android.R.layout.two_line_list_item, cursor, headers, new int[]{android.R.id.text1, android.R.id.text2}, 0);
+        simpleCursorAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_banknote, cursor, headers, new int[]{R.id.lvdenomination, R.id.lvprintyer}, 0);
         listView.setAdapter(simpleCursorAdapter);
-        scrollView.scrollTo(0,0);
 
     }
-
 
 
     @Override
@@ -68,7 +103,6 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         switch (v.getId())
         {
             case R.id.btnsearchstart:
-                test();
                 //DataBaseManager.check();
                 break;
 

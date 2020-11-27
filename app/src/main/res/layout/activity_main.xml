@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:background="#0A093C"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:padding="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,8 +19,8 @@
         android:gravity="center_horizontal">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:src="@mipmap/csn_logo" />
     </LinearLayout>
 

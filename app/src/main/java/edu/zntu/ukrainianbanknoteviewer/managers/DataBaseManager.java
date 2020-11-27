@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DataBaseManager extends SQLiteOpenHelper
@@ -22,9 +23,9 @@ public class DataBaseManager extends SQLiteOpenHelper
     private final static String DATABASE_NAME = "banknotes.db";
     private static String DATABASE_PATH;
     private static SQLiteDatabase sqLiteDatabase;
-    public static Context context;
+    private final Context context;
     private static Cursor cursor;
-
+    //private boolean DatabaseFull = false;
 
     public DataBaseManager(Context context)
     {
@@ -35,9 +36,41 @@ public class DataBaseManager extends SQLiteOpenHelper
         open();
     }
 
+    public static void getAutocompleteEditText(final ArrayList<String> autocompleteEditText, Runnable runnable)
+    {
+        new Thread(() -> {
+            cursor = sqLiteDatabase.rawQuery("select main.denomination, main.printYear " +
+                    "from main", null);
+
+            cursor.moveToFirst();
+            int i = 0, denomination;
+            while (cursor.moveToNext())
+            {
+                denomination = Integer.parseInt(cursor.getString(cursor.getColumnIndex("denomination")));
+                if (denomination == 1)
+                {
+                    autocompleteEditText.add(i, denomination + " гривня " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
+                }
+                if (denomination == 2)
+                {
+                    autocompleteEditText.add(i, denomination + " гривні " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
+
+                }
+                if (denomination > 2)
+                {
+                    autocompleteEditText.add(i, denomination + " гривень " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
+
+                }
+                ++i;
+            }
+            runnable.run();
+        }).start();
+
+    }
+
     public static Cursor check()
     {
-        cursor = sqLiteDatabase.rawQuery("select *" +
+        cursor = sqLiteDatabase.rawQuery("select * " +
                 "from main", null);
         cursor.moveToFirst();
         /*while(cursor.moveToNext())
@@ -49,14 +82,13 @@ public class DataBaseManager extends SQLiteOpenHelper
     {
         InputStream inputStream;
         OutputStream outputStream;
-        Log.d("Database","Checking creation");
+        Log.d("Database", "Checking creation");
         try
         {
-
             File file = new File(DATABASE_PATH);
             if (!file.exists())
             {
-                Log.d("Database","Creating Database");
+                Log.d("Database", "Creating Database");
                 this.getReadableDatabase();
                 //получаем локальную бд как поток
                 inputStream = context.getAssets().open(DATABASE_NAME);
@@ -88,7 +120,7 @@ public class DataBaseManager extends SQLiteOpenHelper
     {
 
         this.sqLiteDatabase = SQLiteDatabase.openDatabase(DATABASE_PATH, null, SQLiteDatabase.OPEN_READONLY);
-        Log.d("Database","Opened Successfully");
+        Log.d("Database", "Opened Successfully");
     }
 
     @Override
