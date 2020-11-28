@@ -20,7 +20,6 @@ public class ShortBanknoteInfoAdapter extends ArrayAdapter<ShortBanknoteInfo>
     private LayoutInflater inflater;
     private int layout;
     private List<ShortBanknoteInfo> banknotes;
-    private View view;
 
     public ShortBanknoteInfoAdapter(@NonNull Context context, int resource, List<ShortBanknoteInfo> banknotes)
     {
@@ -32,9 +31,7 @@ public class ShortBanknoteInfoAdapter extends ArrayAdapter<ShortBanknoteInfo>
 
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        this.view = inflater.inflate(R.layout.fragment_show_and_search, parent, false);
-        // this.view = inflater.inflate(R.layout.fragment_show_and_search, container, false);
-        //View view = inflater.inflate(this.layout, parent, false);
+        View view=inflater.inflate(this.layout, parent, false);
 
         ImageView banknoteImage = view.findViewById(R.id.lviv);
         TextView denomination = view.findViewById(R.id.lvdenomination);

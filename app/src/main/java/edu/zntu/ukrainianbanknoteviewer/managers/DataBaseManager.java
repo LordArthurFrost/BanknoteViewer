@@ -16,6 +16,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import edu.zntu.ukrainianbanknoteviewer.ShortBanknoteInfo;
 
 public class DataBaseManager extends SQLiteOpenHelper
 {
@@ -24,8 +29,12 @@ public class DataBaseManager extends SQLiteOpenHelper
     private static String DATABASE_PATH;
     private static SQLiteDatabase sqLiteDatabase;
     private final Context context;
-    private static Cursor cursor;
-    //private boolean DatabaseFull = false;
+    private static final int DENOMINATION = 0;
+    private static final int PRINTYEAR = 1;
+    private static final int DATE = 2;
+    private static final int MEMORABLE = 3;
+    private static final int TURNOVER = 4;
+
 
     public DataBaseManager(Context context)
     {
@@ -39,7 +48,7 @@ public class DataBaseManager extends SQLiteOpenHelper
     public static void getAutocompleteEditText(final ArrayList<String> autocompleteEditText, Runnable runnable)
     {
         new Thread(() -> {
-            cursor = sqLiteDatabase.rawQuery("select main.denomination, main.printYear " +
+            Cursor cursor = sqLiteDatabase.rawQuery("select main.denomination, main.printYear " +
                     "from main", null);
 
             cursor.moveToFirst();
@@ -68,15 +77,107 @@ public class DataBaseManager extends SQLiteOpenHelper
 
     }
 
+    public static void fillShortBanknoteInfoList(final List<ShortBanknoteInfo> shortBanknoteInfoList, Map<Integer, String> map, Runnable runnable)
+    {
+        new Thread(() -> {
+            StringBuilder basicQuery = new StringBuilder("select main._id, main.denomination, main.printYear, main.date, main.memorable, main.turnover from main ");
+            int counter = 0;
+            for (String value : map.values())
+            {
+                if (!value.equals(""))
+                {
+                    ++counter;
+                }
+            }
+
+            if (!Objects.equals(map.getOrDefault(MEMORABLE, ""), ""))
+            {
+                --counter;
+            }
+
+            String[] result = new String[counter];
+            counter = 0;
+
+            for (Integer i : map.keySet())
+            {
+                if (!Objects.equals(map.getOrDefault(i, ""), ""))
+                {
+                    if (counter != 0)
+                    {
+                        basicQuery.append("and ");
+                    } else
+                    {
+                        basicQuery.append("where ");
+                    }
+                    switch (i)
+                    {
+                        case DENOMINATION:
+                            basicQuery.append("main.denomination = ? ");
+                            result[counter] = map.get(i);
+                            ++counter;
+                            break;
+                        case PRINTYEAR:
+                            basicQuery.append("main.printYear = ? ");
+                            result[counter] = map.get(i);
+                            ++counter;
+                            break;
+                        case DATE:
+                            basicQuery.append("main.date = ? ");
+                            result[counter] = "`" + map.get(i) + "`";
+                            ++counter;
+                            break;
+                        case MEMORABLE:
+
+                            basicQuery.append("main.memorable is not null ");
+                            break;
+                        case TURNOVER:
+
+                            basicQuery.append("main.turnover = ? ");
+                            result[counter] = map.get(i);
+                            ++counter;
+                            break;
+                    }
+                }
+            }
+            Cursor cursor2;
+            cursor2 = sqLiteDatabase.rawQuery(basicQuery.toString(), result);
+            cursor2.moveToFirst();
+            counter = 0;
+            String memorable, turnover;
+
+            while (cursor2.moveToNext())
+            {
+
+                if (cursor2.getString(cursor2.getColumnIndex("memorable")) == null)
+                {
+                    memorable = "Не пам'ятна";
+                } else
+                {
+                    memorable = "Пам'ятна";
+                }
+                if (Integer.parseInt(cursor2.getString(cursor2.getColumnIndex("turnover"))) == 0)
+                {
+                    turnover = "Вийшла з обігу";
+                } else
+                {
+                    turnover = "Дійсна";
+                }
+                shortBanknoteInfoList.add(counter, new ShortBanknoteInfo(cursor2.getString(cursor2.getColumnIndex("_id")), cursor2.getString(cursor2.getColumnIndex("denomination")), cursor2.getString(cursor2.getColumnIndex("printYear")), cursor2.getString(cursor2.getColumnIndex("date")), memorable, turnover));
+                ++counter;
+            }
+            runnable.run();
+        }).start();
+    }
+/*
     public static Cursor check()
     {
-        cursor = sqLiteDatabase.rawQuery("select * " +
+        Cursor cursor = sqLiteDatabase.rawQuery("select * " +
                 "from main", null);
         cursor.moveToFirst();
         /*while(cursor.moveToNext())
         Log.d("Database", cursor.getString(cursor.getColumnIndex("denomination")));*/
-        return cursor;
-    }
+      //  return cursor;
+   // }
 
     void create_db()
     {
@@ -119,7 +220,7 @@ public class DataBaseManager extends SQLiteOpenHelper
     public void open() throws SQLException
     {
 
-        this.sqLiteDatabase = SQLiteDatabase.openDatabase(DATABASE_PATH, null, SQLiteDatabase.OPEN_READONLY);
+        sqLiteDatabase = SQLiteDatabase.openDatabase(DATABASE_PATH, null, SQLiteDatabase.OPEN_READONLY);
         Log.d("Database", "Opened Successfully");
     }
 

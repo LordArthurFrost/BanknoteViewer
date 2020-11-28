@@ -17,7 +17,9 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.zntu.ukrainianbanknoteviewer.R;
 import edu.zntu.ukrainianbanknoteviewer.ShortBanknoteInfo;
@@ -30,6 +32,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     private FragmentShowBanknote fragmentShowBanknote;
     private View view;
     private List<ShortBanknoteInfo> shortBanknoteInfoList;
+    Map<Integer, String> searchmap;
     Button btnFilters, btnSearch;
     Cursor cursor;
     SimpleCursorAdapter simpleCursorAdapter;
@@ -47,22 +50,55 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     {
         this.view = inflater.inflate(R.layout.fragment_show_and_search, container, false);
         shortBanknoteInfoList = new ArrayList<>();
+        searchmap = new HashMap<>();
         btnFilters = view.findViewById(R.id.btnsearchfilter);
         btnSearch = view.findViewById(R.id.btnsearchstart);
-        listView = view.findViewById(R.id.listshowandsearch);
         btnSearch.setOnClickListener(this);
         btnFilters.setOnClickListener(this);
 
 
+
+        initialDBtest();
+        DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> something()));
         ArrayList<String> data = new ArrayList<>();
         DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
+
+
+        //DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> test()));
+
+
+       /* DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                requireActivity().runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        test();
+                    }
+                });
+            }
+        });*/
 
         return view;
     }
 
+    public void something()
+    {
+        listView = view.findViewById(R.id.listshowandsearch);
+        shortBanknoteInfoAdapter = new ShortBanknoteInfoAdapter(getContext(), R.layout.listview_banknote, shortBanknoteInfoList);
+        listView.setAdapter(shortBanknoteInfoAdapter);
+    }
 
-  //  shortBanknoteInfoAdapter = new ShortBanknoteInfoAdapter(getContext(), R.layout.listview_banknote, )
+    public void initialDBtest()
+    {
+        searchmap.put(0, "1");
+    }
 
+    //  shortBanknoteInfoAdapter = new ShortBanknoteInfoAdapter(getContext(), R.layout.listview_banknote, )
 
 
     //TODO
@@ -79,7 +115,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
             {
                 if (actionId == EditorInfo.IME_ACTION_DONE)
                 {
-                    test();
+                   //
                 }
                 return false;
             }
@@ -87,14 +123,14 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
     }
 
-    public void test()
+    /*public void test()
     {
         cursor = DataBaseManager.check();
         String[] headers = new String[]{"denomination", "printYear"};
         simpleCursorAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_banknote, cursor, headers, new int[]{R.id.lvdenomination, R.id.lvprintyer}, 0);
         listView.setAdapter(simpleCursorAdapter);
 
-    }
+    }*/
 
 
     @Override
