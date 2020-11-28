@@ -168,16 +168,7 @@ public class DataBaseManager extends SQLiteOpenHelper
             runnable.run();
         }).start();
     }
-/*
-    public static Cursor check()
-    {
-        Cursor cursor = sqLiteDatabase.rawQuery("select * " +
-                "from main", null);
-        cursor.moveToFirst();
-        /*while(cursor.moveToNext())
-        Log.d("Database", cursor.getString(cursor.getColumnIndex("denomination")));*/
-      //  return cursor;
-   // }
+
 
     void create_db()
     {

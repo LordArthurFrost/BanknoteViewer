@@ -2,11 +2,13 @@ package edu.zntu.ukrainianbanknoteviewer.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -39,6 +41,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     AutoCompleteTextView autoCompleteTextView;
     ListView listView;
     ShortBanknoteInfoAdapter shortBanknoteInfoAdapter;
+    AdapterView.OnItemClickListener onItemClickListener;
 
     public FragmentShowAndSearch()
     {
@@ -57,9 +60,10 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         btnFilters.setOnClickListener(this);
 
 
-
         initialDBtest();
-        DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> something()));
+        DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
+
+
         ArrayList<String> data = new ArrayList<>();
         DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
 
@@ -86,16 +90,30 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         return view;
     }
 
-    public void something()
+    public void setBanknoteList()
     {
+        Log.d("FragmentSearch", "setBanknoteList()");
         listView = view.findViewById(R.id.listshowandsearch);
         shortBanknoteInfoAdapter = new ShortBanknoteInfoAdapter(getContext(), R.layout.listview_banknote, shortBanknoteInfoList);
         listView.setAdapter(shortBanknoteInfoAdapter);
+        Log.d("FragmentSearch", "before onItemClickListener");
+        onItemClickListener = new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+
+                ShortBanknoteInfo selectedbanknote = (ShortBanknoteInfo) parent.getItemAtPosition(position);
+                Log.d("FragmentSearch", selectedbanknote.getDenomination() + " " + selectedbanknote.getPrintYear());
+            }
+        };
+        listView.setOnItemClickListener(onItemClickListener);
+
     }
 
     public void initialDBtest()
     {
-        searchmap.put(0, "1");
+        //searchmap.put(0, "1");
     }
 
     //  shortBanknoteInfoAdapter = new ShortBanknoteInfoAdapter(getContext(), R.layout.listview_banknote, )
@@ -115,22 +133,13 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
             {
                 if (actionId == EditorInfo.IME_ACTION_DONE)
                 {
-                   //
+                    //
                 }
                 return false;
             }
         });
 
     }
-
-    /*public void test()
-    {
-        cursor = DataBaseManager.check();
-        String[] headers = new String[]{"denomination", "printYear"};
-        simpleCursorAdapter = new SimpleCursorAdapter(getContext(), R.layout.listview_banknote, cursor, headers, new int[]{R.id.lvdenomination, R.id.lvprintyer}, 0);
-        listView.setAdapter(simpleCursorAdapter);
-
-    }*/
 
 
     @Override

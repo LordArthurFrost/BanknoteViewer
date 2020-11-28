@@ -31,7 +31,7 @@ public class ShortBanknoteInfoAdapter extends ArrayAdapter<ShortBanknoteInfo>
 
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        View view=inflater.inflate(this.layout, parent, false);
+        View view = inflater.inflate(this.layout, parent, false);
 
         ImageView banknoteImage = view.findViewById(R.id.lviv);
         TextView denomination = view.findViewById(R.id.lvdenomination);
