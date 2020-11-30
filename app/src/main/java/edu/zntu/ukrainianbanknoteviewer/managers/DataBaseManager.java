@@ -132,32 +132,40 @@ public class DataBaseManager extends SQLiteOpenHelper
                     }
                 }
             }
+
+            map.clear();
+            shortBanknoteInfoList.clear();
             Cursor cursor;
-            cursor = sqLiteDatabase.rawQuery(basicQuery.toString(), result);
+            cursor = sqLiteDatabase.rawQuery(basicQuery.toString() + " order by main.denomination ", result);
             cursor.moveToFirst();
             counter = 0;
             String memorable, turnover;
 
-            while (cursor.moveToNext())
+            do
             {
-
-                if (cursor.getString(cursor.getColumnIndex("memorable")) == null)
+                try
                 {
-                    memorable = "Не пам'ятна";
-                } else
+                    if (cursor.getString(cursor.getColumnIndex("memorable")) == null)
+                    {
+                        memorable = "Не пам'ятна";
+                    } else
+                    {
+                        memorable = "Пам'ятна";
+                    }
+                    if (Integer.parseInt(cursor.getString(cursor.getColumnIndex("turnover"))) == 0)
+                    {
+                        turnover = "Вийшла з обігу";
+                    } else
+                    {
+                        turnover = "Дійсна";
+                    }
+                    shortBanknoteInfoList.add(counter, new ShortBanknoteInfo(cursor.getString(cursor.getColumnIndex("_id")), cursor.getString(cursor.getColumnIndex("denomination")), cursor.getString(cursor.getColumnIndex("printYear")), cursor.getString(cursor.getColumnIndex("date")), memorable, turnover));
+                    ++counter;
+                } catch (Exception e)
                 {
-                    memorable = "Пам'ятна";
+                    e.printStackTrace();
                 }
-                if (Integer.parseInt(cursor.getString(cursor.getColumnIndex("turnover"))) == 0)
-                {
-                    turnover = "Вийшла з обігу";
-                } else
-                {
-                    turnover = "Дійсна";
-                }
-                shortBanknoteInfoList.add(counter, new ShortBanknoteInfo(cursor.getString(cursor.getColumnIndex("_id")), cursor.getString(cursor.getColumnIndex("denomination")), cursor.getString(cursor.getColumnIndex("printYear")), cursor.getString(cursor.getColumnIndex("date")), memorable, turnover));
-                ++counter;
-            }
+            } while (cursor.moveToNext());
             runnable.run();
             cursor.close();
         }).start();

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,18 +36,20 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     private View view;
     private List<ShortBanknoteInfo> shortBanknoteInfoList;
     private Map<Integer, String> searchmap;
-    Map<Integer, String> transfermap;
-    int y;
-    Button btnFilters, btnSearch;
-    AutoCompleteTextView autoCompleteTextView;
-    ListView listView;
-    ShortBanknoteInfoAdapter shortBanknoteInfoAdapter;
-    AdapterView.OnItemClickListener onItemClickListener;
+    private Map<Integer, String> transfermap;
+    private int y;
+    private Button btnFilters, btnSearch;
+    private AutoCompleteTextView autoCompleteTextView;
+    private ListView listView;
+    private ShortBanknoteInfoAdapter shortBanknoteInfoAdapter;
+    private AdapterView.OnItemClickListener onItemClickListener;
+
 
     public FragmentShowAndSearch()
     {
         // Required empty public constructor
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -59,7 +62,6 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         btnSearch.setOnClickListener(this);
         btnFilters.setOnClickListener(this);
 
-        DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
 
         ArrayList<String> data = new ArrayList<>();
         DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
@@ -86,6 +88,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
         return view;
     }
+
 
     public void setBanknoteList()
     {
@@ -151,10 +154,52 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     @Override
     public void onClick(View v)
     {
+        String[] getSearch, year, denomin;
+        String result;
+        StringBuilder calculateSearch = new StringBuilder();
+        int length;
         switch (v.getId())
         {
             case R.id.btnsearchstart:
-                //DataBaseManager.check();
+                result = autoCompleteTextView.getText().toString();
+                Log.d("FragmentShow", result);
+
+                getSearch = result.split("\\s+([А-і])\\w+");
+                for (String string : getSearch)
+                {
+                    calculateSearch.append(string);
+                }
+                getSearch = calculateSearch.toString().split("\\s");
+
+                length = getSearch.length;
+
+                switch (length)
+                {
+                    case 1:
+                        if (getSearch[0].matches("\\d{4}"))
+                        {
+                            searchmap.put(ConstantsBanknote.PRINTYEAR, getSearch[0]);
+                        } else
+                        {
+                            searchmap.put(ConstantsBanknote.DENOMINATION, getSearch[0]);
+                        }
+
+                        break;
+                    case 2:
+                        if (getSearch[0].matches("\\d{4}"))
+                        {
+                            searchmap.put(ConstantsBanknote.PRINTYEAR, getSearch[0]);
+                            searchmap.put(ConstantsBanknote.DENOMINATION, getSearch[1]);
+                        } else
+                        {
+                            searchmap.put(ConstantsBanknote.PRINTYEAR, getSearch[1]);
+                            searchmap.put(ConstantsBanknote.DENOMINATION, getSearch[0]);
+                        }
+                        break;
+                }
+
+
+                DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
                 break;
 
             case R.id.btnsearchfilter:
