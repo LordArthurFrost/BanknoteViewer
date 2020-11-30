@@ -7,15 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -166,7 +163,7 @@ public class DataBaseManager extends SQLiteOpenHelper
         }).start();
     }
 
-    public static void searchToShowTransfer(final Map<Integer, String> transferMap)
+    public static void searchToShowTransfer(final Map<Integer, String> transferMap, Runnable runnable)
     {
         new Thread(() -> {
             Cursor cursor;
@@ -181,8 +178,10 @@ public class DataBaseManager extends SQLiteOpenHelper
             transferMap.put(ConstantsBanknote.EXTRAINFOINFO, cursor.getString(cursor.getColumnIndex("extra")));
             transferMap.put(ConstantsBanknote.SIZEINFO, cursor.getString(cursor.getColumnIndex("size")));
 
+            runnable.run();
             cursor.close();
         }).start();
+
     }
 
 

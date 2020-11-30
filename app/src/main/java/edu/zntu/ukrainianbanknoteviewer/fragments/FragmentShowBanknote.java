@@ -8,9 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import edu.zntu.ukrainianbanknoteviewer.ConstantsBanknote;
 import edu.zntu.ukrainianbanknoteviewer.R;
@@ -19,45 +21,40 @@ import edu.zntu.ukrainianbanknoteviewer.ShortBanknoteInfo;
 public class FragmentShowBanknote extends Fragment
 {
     private View view;
+    private ProgressBar progressBar;
+    private TextView tvDenomination, tvPrintYear, tvReleaseDate, tvSize, tvTurnover, tvDescription, tvExtra, tvProtection, tvMemorable;
+    private ImageView ivBanknote;
+    private String denomination, printYear, releaseDate, size = "Downloading Information...", turnover, descriptionAbver, descriptionRever, extra, protection, imageAbver, imageRever, memorable;
 
-
-    TextView tvDenomination, tvPrintYear, tvReleaseDate, tvSize, tvTurnover, tvDescription, tvExtra, tvProtection;
-    ImageView ivBanknote;
-    String denomination, printYear, releaseDate, size, turnover, descriptionAbver, descriptionRever, extra, protection, imageAbver, imageRever;
-
-    public void setBanknoteInfo(ShortBanknoteInfo shortBanknoteInfo, Map<Integer, String> map)
+    public void setBanknoteInfo(ShortBanknoteInfo shortBanknoteInfo)
     {
         this.denomination = shortBanknoteInfo.getDenomination();
-        int checkDenomination = Integer.parseInt(shortBanknoteInfo.getDenomination());
+        int checkDenomination = Integer.parseInt(denomination);
         setDenominationValue(checkDenomination);
 
-        this.denomination = shortBanknoteInfo.getDenomination() + " Гривня";
-        this.printYear = shortBanknoteInfo.getPrintYear() + " Рік";
-        this.releaseDate = shortBanknoteInfo.getReleaseDate();
+        this.printYear = "Рік початку печаті: " + shortBanknoteInfo.getPrintYear() + " рік";
+        this.releaseDate = "Дата випуску: " + shortBanknoteInfo.getReleaseDate();
         this.turnover = shortBanknoteInfo.getActive();
         this.imageAbver = shortBanknoteInfo.getImageAbver();
         this.imageRever = shortBanknoteInfo.getImageRever();
-        this.descriptionAbver = map.get(ConstantsBanknote.DESCRIPTIONFRONT);
-        this.descriptionRever = map.get(ConstantsBanknote.DESCRIPTIONBACK);
-        this.protection = map.get(ConstantsBanknote.PROTECTIONINFO);
-        this.extra = map.get(ConstantsBanknote.EXTRAINFOINFO);
-        this.size = map.get(ConstantsBanknote.SIZEINFO) + " мм";
-
+        this.memorable = shortBanknoteInfo.getMemorable();
     }
 
     public void setDenominationValue(int checkDenomination)
     {
-        if (checkDenomination == 1)
+        switch (checkDenomination)
         {
-            this.denomination = denomination + " Гривня";
-        }
-        if (checkDenomination == 2)
-        {
-            this.denomination = denomination + " Гривні";
-        }
-        if (checkDenomination > 2)
-        {
-            this.denomination = denomination + " Гривень";
+            case 1:
+                this.denomination = denomination + " Гривня";
+                break;
+
+            case 2:
+                this.denomination = denomination + " Гривні";
+                break;
+
+            default:
+                this.denomination = denomination + " Гривень";
+                break;
         }
     }
 
@@ -74,29 +71,60 @@ public class FragmentShowBanknote extends Fragment
         tvDenomination = view.findViewById(R.id.tvshowdenomination);
         tvPrintYear = view.findViewById(R.id.tvshowprintyear);
         tvReleaseDate = view.findViewById(R.id.tvshowreleaseDate);
-        tvSize = view.findViewById(R.id.tvshowsize);
         tvTurnover = view.findViewById(R.id.tvshowturnover);
+        ivBanknote = view.findViewById(R.id.ivshowimage);
+        tvMemorable = view.findViewById(R.id.tvshowmenorable);
+
+        progressBar = view.findViewById(R.id.showProgressBar);
+
+        tvSize = view.findViewById(R.id.tvshowsize);
         tvDescription = view.findViewById(R.id.tvshowdescription);
         tvExtra = view.findViewById(R.id.tvshowextra);
         tvProtection = view.findViewById(R.id.tvshowprotection);
-        ivBanknote = view.findViewById(R.id.ivshowimage);
-        setContent();
+
+        setPrimeContent();
+
+        AtomicBoolean checkerAbver = new AtomicBoolean(true);
         ivBanknote.setOnClickListener(v -> {
-            ivBanknote.setImageResource(R.drawable.ic_baseline_folder_24);
+            if (checkerAbver.get())
+            {
+                ivBanknote.setImageResource(R.drawable.ic_baseline_folder_24);
+                tvDescription.setText(descriptionRever);
+                checkerAbver.set(false);
+            } else
+            {
+                ivBanknote.setImageResource(R.drawable.ic_baseline_apps_24);
+                tvDescription.setText(descriptionAbver);
+                checkerAbver.set(true);
+            }
         });
 
         return view;
     }
 
-    public void setContent()
+    public void setPrimeContent()
     {
         tvDenomination.setText(denomination);
         tvPrintYear.setText(printYear);
         tvReleaseDate.setText(releaseDate);
-        tvDescription.setText(descriptionAbver);
         tvTurnover.setText(turnover);
-        tvExtra.setText(extra);
         ivBanknote.setImageResource(R.drawable.ic_baseline_apps_24);
+        tvMemorable.setText(memorable);
+    }
+
+    public void setAdditionalContent(Map<Integer, String> map)
+    {
+        this.descriptionAbver = map.get(ConstantsBanknote.DESCRIPTIONFRONT);
+        this.descriptionRever = map.get(ConstantsBanknote.DESCRIPTIONBACK);
+        this.protection = map.get(ConstantsBanknote.PROTECTIONINFO);
+        this.extra = map.get(ConstantsBanknote.EXTRAINFOINFO);
+        this.size = map.get(ConstantsBanknote.SIZEINFO) + " мм";
+
+        progressBar.setVisibility(View.GONE);
+
+        tvDescription.setText(descriptionAbver);
+        tvExtra.setText(extra);
+        tvSize.setText(size);
         tvProtection.setText(protection);
     }
 }

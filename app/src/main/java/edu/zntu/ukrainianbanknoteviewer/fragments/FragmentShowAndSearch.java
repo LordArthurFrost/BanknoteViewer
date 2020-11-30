@@ -36,6 +36,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     private List<ShortBanknoteInfo> shortBanknoteInfoList;
     private Map<Integer, String> searchmap;
     Map<Integer, String> transfermap;
+    int y;
     Button btnFilters, btnSearch;
     AutoCompleteTextView autoCompleteTextView;
     ListView listView;
@@ -58,8 +59,6 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         btnSearch.setOnClickListener(this);
         btnFilters.setOnClickListener(this);
 
-
-        initialDBtest();
         DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
 
         ArrayList<String> data = new ArrayList<>();
@@ -105,30 +104,22 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
                 ShortBanknoteInfo selectedBanknote = (ShortBanknoteInfo) parent.getItemAtPosition(position);
 
                 transfermap.put(ConstantsBanknote.IDINFO, selectedBanknote.getImageAbver());
-                DataBaseManager.searchToShowTransfer(transfermap);
+
+
+                DataBaseManager.searchToShowTransfer(transfermap, () -> requireActivity().runOnUiThread(() -> fragmentShowBanknote.setAdditionalContent(transfermap)));
 
 
                 Log.d("FragmentSearch", selectedBanknote.getDenomination() + " " + selectedBanknote.getPrintYear());
 
+
+                y = listView.getScrollY();
                 fragmentShowBanknote = new FragmentShowBanknote();
-                fragmentShowBanknote.setBanknoteInfo(selectedBanknote, transfermap);
+                fragmentShowBanknote.setBanknoteInfo(selectedBanknote);
+                DataBaseManager.searchToShowTransfer(transfermap, () -> requireActivity().runOnUiThread(() -> fragmentShowBanknote.setAdditionalContent(transfermap)));
                 FragmentHelper.openFragment(fragmentShowBanknote);
             }
         };
         listView.setOnItemClickListener(onItemClickListener);
-
-    }
-
-    public void test()
-    {
-        transfermap = new HashMap<>();
-        transfermap.put(ConstantsBanknote.IDINFO, "11994");
-        DataBaseManager.searchToShowTransfer(transfermap);
-    }
-
-    public void initialDBtest()
-    {
-        //searchmap.put(ConstantsBanknote.DENOMINATION, "1");
     }
 
 
@@ -138,6 +129,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         this.autoCompleteTextView = view.findViewById(R.id.autoCompleteEditText);
         autoCompleteTextView.setAdapter(new ArrayAdapter<>(getContext(), R.layout.custom_list_item, R.id.text_view_list_item, data));
         autoCompleteTextView.setThreshold(1);
+
         autoCompleteTextView.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
