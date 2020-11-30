@@ -250,5 +250,3 @@ public class DataBaseManager extends SQLiteOpenHelper
         //NULL
     }
 }
-
-

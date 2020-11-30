@@ -15,6 +15,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,12 +39,13 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     private List<ShortBanknoteInfo> shortBanknoteInfoList;
     private Map<Integer, String> searchmap;
     private Map<Integer, String> transfermap;
-    private int y;
-    private Button btnFilters, btnSearch;
+    private Button btnFilters;
     private AutoCompleteTextView autoCompleteTextView;
     private ListView listView;
+    private FragmentFilterDialog fragmentFilterDialog;
     private ShortBanknoteInfoAdapter shortBanknoteInfoAdapter;
     private AdapterView.OnItemClickListener onItemClickListener;
+    private String denomination, printYear, releaseDate, size, turnover, descriptionAbver, descriptionRever, extra, protection, imageAbver, imageRever, memorable;
 
 
     public FragmentShowAndSearch()
@@ -58,8 +61,6 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         shortBanknoteInfoList = new ArrayList<>();
         searchmap = new HashMap<>();
         btnFilters = view.findViewById(R.id.btnsearchfilter);
-        btnSearch = view.findViewById(R.id.btnsearchstart);
-        btnSearch.setOnClickListener(this);
         btnFilters.setOnClickListener(this);
 
 
@@ -114,8 +115,6 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
                 Log.d("FragmentSearch", selectedBanknote.getDenomination() + " " + selectedBanknote.getPrintYear());
 
-
-                y = listView.getScrollY();
                 fragmentShowBanknote = new FragmentShowBanknote();
                 fragmentShowBanknote.setBanknoteInfo(selectedBanknote);
                 DataBaseManager.searchToShowTransfer(transfermap, () -> requireActivity().runOnUiThread(() -> fragmentShowBanknote.setAdditionalContent(transfermap)));
@@ -133,47 +132,23 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         autoCompleteTextView.setAdapter(new ArrayAdapter<>(getContext(), R.layout.custom_list_item, R.id.text_view_list_item, data));
         autoCompleteTextView.setThreshold(1);
 
-        autoCompleteTextView.setOnEditorActionListener(new TextView.OnEditorActionListener()
-        {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+        autoCompleteTextView.setOnEditorActionListener((v, actionId, event) -> {
+            String[] getSearch;
+            String result;
+            StringBuilder calculateSearch = new StringBuilder();
+            if ((actionId == EditorInfo.IME_ACTION_PREVIOUS))
             {
-                //TODO NOT WORKING???
-                if (actionId == EditorInfo.IME_ACTION_DONE)
-                {
-                    Log.d("FragmentSearch", "IME_ACTION_DONE");
-                    return true;
-                }
-                return false;
-            }
-        });
-
-    }
-
-
-    @Override
-    public void onClick(View v)
-    {
-        String[] getSearch, year, denomin;
-        String result;
-        StringBuilder calculateSearch = new StringBuilder();
-        int length;
-        switch (v.getId())
-        {
-            case R.id.btnsearchstart:
                 result = autoCompleteTextView.getText().toString();
                 Log.d("FragmentShow", result);
 
-                getSearch = result.split("\\s+([А-і])\\w+");
+                getSearch = result.split("\\s+([A-і])\\w+");
                 for (String string : getSearch)
                 {
                     calculateSearch.append(string);
                 }
                 getSearch = calculateSearch.toString().split("\\s");
 
-                length = getSearch.length;
-
-                switch (length)
+                switch (getSearch.length)
                 {
                     case 1:
                         if (getSearch[0].matches("\\d{4}"))
@@ -200,10 +175,24 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
 
                 DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
-                break;
+                return true;
+            }
+            return false;
+        });
 
+    }
+
+
+    @Override
+    public void onClick(View v)
+    {
+
+        fragmentFilterDialog = new FragmentFilterDialog();
+        switch (v.getId())
+        {
             case R.id.btnsearchfilter:
-                break;
+                fragmentFilterDialog.show(this.getParentFragmentManager(), "tag");
+            break;
         }
     }
 }

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/dialogcorners"
+    android:gravity="top"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".fragments.FragmentFilterDialog">
+
+    <TextView
+        style="@style/TextViewPrimary"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        android:text="@string/tvfilterDialogTitle"
+        android:textAllCaps="true"
+        android:textSize="25sp" />
+
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:rowCount="7">
+
+
+        <TextView
+            style="@style/TextViewDialog"
+            android:layout_row="0"
+            android:text="@string/tvfilterDialogDenomination" />
+
+        <TextView
+            style="@style/TextViewDialog"
+            android:layout_row="1"
+            android:text="@string/tvfilterDialogPrintYear" />
+
+        <TextView
+            style="@style/TextViewDialog"
+            android:layout_row="2"
+            android:text="@string/tvfilterDialogDate" />
+
+        <TextView
+            style="@style/TextViewDialog"
+            android:layout_row="3"
+            android:text="@string/tvfilterDialogSize" />
+
+        <TextView
+            style="@style/TextViewDialog"
+            android:layout_row="4"
+            android:text="@string/tvfilterDialogMemorable" />
+
+        <TextView
+            style="@style/TextViewDialog"
+            android:layout_row="5"
+            android:text="@string/tvfilterDialogTurnover" />
+
+        <Button
+            android:id="@+id/btnfilterdialogdecline"
+            style="@style/Buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="6"
+            android:layout_column="1"
+            android:background="@drawable/roundbutton"
+            android:layout_marginTop="10dp"
+            android:text="@string/btnfilterDialogDecline" />
+
+        <EditText
+            android:id="@+id/etfilterDialogDenomination"
+            style="@style/DialogEditTextWhite"
+            android:layout_row="0" />
+
+        <EditText
+            android:id="@+id/etfilterDialogPrintYear"
+            style="@style/DialogEditTextWhite"
+            android:layout_row="1" />
+
+        <EditText
+            android:id="@+id/etfilterDialogDate"
+            style="@style/DialogEditTextWhite"
+            android:layout_row="2" />
+
+        <Spinner
+            android:id="@+id/sfilterDialogSize"
+            style="@style/DialogSpinnerWhite"
+            android:layout_row="3" />
+
+        <Spinner
+            android:id="@+id/sfilterDialogMemorable"
+            style="@style/DialogSpinnerWhite"
+            android:layout_row="4" />
+
+        <Spinner
+            android:id="@+id/sfilterDialogTurnover"
+            style="@style/DialogSpinnerWhite"
+            android:layout_row="5" />
+
+        <Button
+            android:id="@+id/btnfilterdialoggo"
+            style="@style/Buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="6"
+            android:background="@drawable/roundbutton"
+            android:layout_column="2"
+            android:layout_marginTop="10dp"
+            android:text="@string/btnfilterDialogAccept" />
+
+
+    </GridLayout>
+
+
+</LinearLayout>

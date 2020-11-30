@@ -25,7 +25,8 @@
                 android:layout_weight="5"
                 android:backgroundTint="#ffffff"
                 android:hint="@string/search_example"
-                android:imeOptions="actionDone"
+                android:imeOptions="actionDone|actionNext"
+                android:singleLine="true"
                 android:textColor="#ffffff"
                 android:textColorHint="#ffffff" />
 
@@ -36,35 +37,22 @@
         </LinearLayout>
 
 
-        <LinearLayout
+    </LinearLayout>
+
+    <!--Вывод из бд-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="100"
+        android:layout_marginTop="20dp">
+
+        <ListView
+            android:id="@+id/listshowandsearch"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/btnsearchstart"
-                style="@style/Buttons"
-                android:text="@string/main_btn_search" />
-
-
-        </LinearLayout>
-
-        <!--Вывод из бд-->
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="100">
-
-            <ListView
-                android:id="@+id/listshowandsearch"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
-
 </LinearLayout>
+
