@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="3dp"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,71 +12,79 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="2"
+        android:layout_weight="4"
         android:gravity="top|center_horizontal"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvshowdenomination"
+            style="@style/TextViewPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/ivshowimage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
     </LinearLayout>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
+
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvprintyear"
+                android:id="@+id/tvshowprintyear"
+                style="@style/TextViewPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/tvyear"
+                android:id="@+id/tvshowreleaseDate"
+                style="@style/TextViewPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/tvsize"
+                android:id="@+id/tvshowsize"
+                style="@style/TextViewPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/tvturnover"
+                android:id="@+id/tvshowturnover"
+                style="@style/TextViewPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/tvnenorable"
+                android:id="@+id/tvshowmenorable"
+                style="@style/TextViewPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/tvdescription"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvshowdescription"
+                style="@style/TextViewPrimary"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/tvprotection"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvshowprotection"
+                style="@style/TextViewPrimary"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/tvextra"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvshowextra"
+                style="@style/TextViewPrimary"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
-    </ScrollView>
+
 </LinearLayout>

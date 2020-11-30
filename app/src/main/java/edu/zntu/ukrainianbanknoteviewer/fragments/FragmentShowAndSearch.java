@@ -1,6 +1,5 @@
 package edu.zntu.ukrainianbanknoteviewer.fragments;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -13,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -23,9 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.zntu.ukrainianbanknoteviewer.ConstantsBanknote;
 import edu.zntu.ukrainianbanknoteviewer.R;
 import edu.zntu.ukrainianbanknoteviewer.ShortBanknoteInfo;
 import edu.zntu.ukrainianbanknoteviewer.managers.DataBaseManager;
+import edu.zntu.ukrainianbanknoteviewer.managers.FragmentHelper;
 import edu.zntu.ukrainianbanknoteviewer.managers.ShortBanknoteInfoAdapter;
 
 
@@ -34,10 +34,9 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     private FragmentShowBanknote fragmentShowBanknote;
     private View view;
     private List<ShortBanknoteInfo> shortBanknoteInfoList;
-    Map<Integer, String> searchmap;
+    private Map<Integer, String> searchmap;
+    Map<Integer, String> transfermap;
     Button btnFilters, btnSearch;
-    Cursor cursor;
-    SimpleCursorAdapter simpleCursorAdapter;
     AutoCompleteTextView autoCompleteTextView;
     ListView listView;
     ShortBanknoteInfoAdapter shortBanknoteInfoAdapter;
@@ -62,7 +61,6 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
         initialDBtest();
         DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
-
 
         ArrayList<String> data = new ArrayList<>();
         DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
@@ -92,6 +90,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
     public void setBanknoteList()
     {
+        transfermap = new HashMap<>();
         Log.d("FragmentSearch", "setBanknoteList()");
         listView = view.findViewById(R.id.listshowandsearch);
         shortBanknoteInfoAdapter = new ShortBanknoteInfoAdapter(getContext(), R.layout.listview_banknote, shortBanknoteInfoList);
@@ -103,23 +102,36 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
 
-                ShortBanknoteInfo selectedbanknote = (ShortBanknoteInfo) parent.getItemAtPosition(position);
-                Log.d("FragmentSearch", selectedbanknote.getDenomination() + " " + selectedbanknote.getPrintYear());
+                ShortBanknoteInfo selectedBanknote = (ShortBanknoteInfo) parent.getItemAtPosition(position);
+
+                transfermap.put(ConstantsBanknote.IDINFO, selectedBanknote.getImageAbver());
+                DataBaseManager.searchToShowTransfer(transfermap);
+
+
+                Log.d("FragmentSearch", selectedBanknote.getDenomination() + " " + selectedBanknote.getPrintYear());
+
+                fragmentShowBanknote = new FragmentShowBanknote();
+                fragmentShowBanknote.setBanknoteInfo(selectedBanknote, transfermap);
+                FragmentHelper.openFragment(fragmentShowBanknote);
             }
         };
         listView.setOnItemClickListener(onItemClickListener);
 
     }
 
-    public void initialDBtest()
+    public void test()
     {
-        //searchmap.put(0, "1");
+        transfermap = new HashMap<>();
+        transfermap.put(ConstantsBanknote.IDINFO, "11994");
+        DataBaseManager.searchToShowTransfer(transfermap);
     }
 
-    //  shortBanknoteInfoAdapter = new ShortBanknoteInfoAdapter(getContext(), R.layout.listview_banknote, )
+    public void initialDBtest()
+    {
+        //searchmap.put(ConstantsBanknote.DENOMINATION, "1");
+    }
 
 
-    //TODO
     public void setAutoCompleteView(ArrayList<String> data)
     {
 
@@ -131,9 +143,11 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
+                //TODO NOT WORKING???
                 if (actionId == EditorInfo.IME_ACTION_DONE)
                 {
-                    //
+                    Log.d("FragmentSearch", "IME_ACTION_DONE");
+                    return true;
                 }
                 return false;
             }

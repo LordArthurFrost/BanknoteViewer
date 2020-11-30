@@ -30,6 +30,7 @@ public class FragmentHelper
             activity.findViewById(R.id.nestedScrollView).scrollTo(0, 0);*/
         fragmentManager.beginTransaction()
                 .replace(R.id.main_fragment, fragment)
+                .addToBackStack(null)
                 .commit();
     }
 

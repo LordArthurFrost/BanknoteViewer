@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:backgroundTint="#ffffff"
-                android:hint="Наприклад, 1 гривня 1994"
+                android:hint="@string/search_example"
                 android:imeOptions="actionDone"
                 android:textColor="#ffffff"
                 android:textColorHint="#ffffff" />

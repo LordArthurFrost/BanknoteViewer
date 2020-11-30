@@ -12,4 +12,5 @@
     <string name="bottom_nav_catalogue">Catalogue</string>
     <string name="bottom_nav_search">Search</string>
     <string name="bottom_nav_info">Info</string>
+    <string name="search_example">Наприклад, 1 гривня 1994</string>
 </resources>

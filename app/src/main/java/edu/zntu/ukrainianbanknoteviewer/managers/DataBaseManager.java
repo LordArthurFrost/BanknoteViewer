@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import edu.zntu.ukrainianbanknoteviewer.ConstantsBanknote;
 import edu.zntu.ukrainianbanknoteviewer.ShortBanknoteInfo;
 
 public class DataBaseManager extends SQLiteOpenHelper
@@ -29,11 +30,6 @@ public class DataBaseManager extends SQLiteOpenHelper
     private static String DATABASE_PATH;
     private static SQLiteDatabase sqLiteDatabase;
     private final Context context;
-    private static final int DENOMINATION = 0;
-    private static final int PRINTYEAR = 1;
-    private static final int DATE = 2;
-    private static final int MEMORABLE = 3;
-    private static final int TURNOVER = 4;
 
 
     public DataBaseManager(Context context)
@@ -90,7 +86,7 @@ public class DataBaseManager extends SQLiteOpenHelper
                 }
             }
 
-            if (!Objects.equals(map.getOrDefault(MEMORABLE, ""), ""))
+            if (!Objects.equals(map.getOrDefault(ConstantsBanknote.MEMORABLE, ""), ""))
             {
                 --counter;
             }
@@ -111,26 +107,26 @@ public class DataBaseManager extends SQLiteOpenHelper
                     }
                     switch (i)
                     {
-                        case DENOMINATION:
+                        case ConstantsBanknote.DENOMINATION:
                             basicQuery.append("main.denomination = ? ");
                             result[counter] = map.get(i);
                             ++counter;
                             break;
-                        case PRINTYEAR:
+                        case ConstantsBanknote.PRINTYEAR:
                             basicQuery.append("main.printYear = ? ");
                             result[counter] = map.get(i);
                             ++counter;
                             break;
-                        case DATE:
+                        case ConstantsBanknote.DATE:
                             basicQuery.append("main.date = ? ");
                             result[counter] = "`" + map.get(i) + "`";
                             ++counter;
                             break;
-                        case MEMORABLE:
+                        case ConstantsBanknote.MEMORABLE:
 
                             basicQuery.append("main.memorable is not null ");
                             break;
-                        case TURNOVER:
+                        case ConstantsBanknote.TURNOVER:
 
                             basicQuery.append("main.turnover = ? ");
                             result[counter] = map.get(i);
@@ -139,33 +135,53 @@ public class DataBaseManager extends SQLiteOpenHelper
                     }
                 }
             }
-            Cursor cursor2;
-            cursor2 = sqLiteDatabase.rawQuery(basicQuery.toString(), result);
-            cursor2.moveToFirst();
+            Cursor cursor;
+            cursor = sqLiteDatabase.rawQuery(basicQuery.toString(), result);
+            cursor.moveToFirst();
             counter = 0;
             String memorable, turnover;
 
-            while (cursor2.moveToNext())
+            while (cursor.moveToNext())
             {
 
-                if (cursor2.getString(cursor2.getColumnIndex("memorable")) == null)
+                if (cursor.getString(cursor.getColumnIndex("memorable")) == null)
                 {
                     memorable = "Не пам'ятна";
                 } else
                 {
                     memorable = "Пам'ятна";
                 }
-                if (Integer.parseInt(cursor2.getString(cursor2.getColumnIndex("turnover"))) == 0)
+                if (Integer.parseInt(cursor.getString(cursor.getColumnIndex("turnover"))) == 0)
                 {
                     turnover = "Вийшла з обігу";
                 } else
                 {
                     turnover = "Дійсна";
                 }
-                shortBanknoteInfoList.add(counter, new ShortBanknoteInfo(cursor2.getString(cursor2.getColumnIndex("_id")), cursor2.getString(cursor2.getColumnIndex("denomination")), cursor2.getString(cursor2.getColumnIndex("printYear")), cursor2.getString(cursor2.getColumnIndex("date")), memorable, turnover));
+                shortBanknoteInfoList.add(counter, new ShortBanknoteInfo(cursor.getString(cursor.getColumnIndex("_id")), cursor.getString(cursor.getColumnIndex("denomination")), cursor.getString(cursor.getColumnIndex("printYear")), cursor.getString(cursor.getColumnIndex("date")), memorable, turnover));
                 ++counter;
             }
             runnable.run();
+            cursor.close();
+        }).start();
+    }
+
+    public static void searchToShowTransfer(final Map<Integer, String> transferMap)
+    {
+        new Thread(() -> {
+            Cursor cursor;
+            String basicQuery = "select main.size, description.front, description.back, description.protection, description.extra " +
+                    "from main, description " +
+                    "where main._id = description._id and main._id = ?";
+            cursor = sqLiteDatabase.rawQuery(basicQuery, new String[]{String.valueOf(transferMap.get(ConstantsBanknote.IDINFO))});
+            cursor.moveToFirst();
+            transferMap.put(ConstantsBanknote.DESCRIPTIONFRONT, cursor.getString(cursor.getColumnIndex("front")));
+            transferMap.put(ConstantsBanknote.DESCRIPTIONBACK, cursor.getString(cursor.getColumnIndex("back")));
+            transferMap.put(ConstantsBanknote.PROTECTIONINFO, cursor.getString(cursor.getColumnIndex("protection")));
+            transferMap.put(ConstantsBanknote.EXTRAINFOINFO, cursor.getString(cursor.getColumnIndex("extra")));
+            transferMap.put(ConstantsBanknote.SIZEINFO, cursor.getString(cursor.getColumnIndex("size")));
+
+            cursor.close();
         }).start();
     }
 

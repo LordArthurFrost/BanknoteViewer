@@ -52,4 +52,8 @@ public class ShortBanknoteInfo
         return imageAbver;
     }
 
+    public String getImageRever()
+    {
+        return imageRever;
+    }
 }
