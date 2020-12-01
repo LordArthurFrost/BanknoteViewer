@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Inflater;
 
 import edu.zntu.ukrainianbanknoteviewer.ConstantsBanknote;
 import edu.zntu.ukrainianbanknoteviewer.R;
@@ -37,15 +38,14 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     private FragmentShowBanknote fragmentShowBanknote;
     private View view;
     private List<ShortBanknoteInfo> shortBanknoteInfoList;
-    private Map<Integer, String> searchmap;
-    private Map<Integer, String> transfermap;
+    private Map<Integer, String> searchmap, transfermap, settingsMap;
     private Button btnFilters;
     private AutoCompleteTextView autoCompleteTextView;
     private ListView listView;
     private FragmentFilterDialog fragmentFilterDialog;
     private ShortBanknoteInfoAdapter shortBanknoteInfoAdapter;
     private AdapterView.OnItemClickListener onItemClickListener;
-    private String denomination, printYear, releaseDate, size, turnover, descriptionAbver, descriptionRever, extra, protection, imageAbver, imageRever, memorable;
+    private static String[] size;
 
 
     public FragmentShowAndSearch()
@@ -53,6 +53,10 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         // Required empty public constructor
     }
 
+    public void setSettingsMap(Map<Integer, String> settingsMap)
+    {
+        this.settingsMap = settingsMap;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -60,15 +64,20 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         this.view = inflater.inflate(R.layout.fragment_show_and_search, container, false);
         shortBanknoteInfoList = new ArrayList<>();
         searchmap = new HashMap<>();
+        settingsMap = new HashMap<>();
         btnFilters = view.findViewById(R.id.btnsearchfilter);
         btnFilters.setOnClickListener(this);
+
+        ArrayList<String> dbsize = new ArrayList<>();
+
+        DataBaseManager.getSize(dbsize, () -> requireActivity().runOnUiThread(() -> {
+            arrayListSizetoString(dbsize);
+
+        }));
 
 
         ArrayList<String> data = new ArrayList<>();
         DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
-
-
-        //DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> test()));
 
 
        /* DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, new Runnable()
@@ -88,6 +97,23 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         });*/
 
         return view;
+    }
+
+    public void arrayListSizetoString(ArrayList<String> arrayList)
+    {
+        size = new String[arrayList.size() + 1];
+
+        size[0] = "";
+        for (int i = 0; i < arrayList.size(); ++i)
+        {
+            size[i + 1] = arrayList.get(i);
+        }
+    }
+
+    public void startSearch(Map<Integer, String> searchmap)
+    {
+        this.searchmap = searchmap;
+        DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
     }
 
 
@@ -173,8 +199,8 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
                         break;
                 }
 
+                startSearch(searchmap);
 
-                DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
                 return true;
             }
             return false;
@@ -182,17 +208,17 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
     }
 
-
     @Override
     public void onClick(View v)
     {
 
-        fragmentFilterDialog = new FragmentFilterDialog();
-        switch (v.getId())
+        fragmentFilterDialog = (FragmentFilterDialog) FragmentFilterDialog.newInstance(settingsMap.getOrDefault(ConstantsBanknote.DENOMINATION, ""), settingsMap.getOrDefault(ConstantsBanknote.PRINTYEAR, ""), settingsMap.getOrDefault(ConstantsBanknote.DATE, ""), size, Integer.parseInt(settingsMap.getOrDefault(ConstantsBanknote.MEMORABLEPOSITION, "0")), Integer.parseInt(settingsMap.getOrDefault(ConstantsBanknote.SIZEPOSITION, "0")), Integer.parseInt(settingsMap.getOrDefault(ConstantsBanknote.TURNOVERPOSITION, "0")));
+
+        if (v.getId() == R.id.btnsearchfilter)
         {
-            case R.id.btnsearchfilter:
-                fragmentFilterDialog.show(this.getParentFragmentManager(), "tag");
-            break;
+            fragmentFilterDialog.show(this.getChildFragmentManager(), "tag");
+
+
         }
     }
 }

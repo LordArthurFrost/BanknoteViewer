@@ -13,4 +13,7 @@ public class ConstantsBanknote
     public static final int EXTRAINFOINFO = 8;
     public static final int SIZEINFO = 9;
     public static final int IDINFO = 10;
+    public static final int MEMORABLEPOSITION =11;
+    public static final int SIZEPOSITION =12;
+    public static final int TURNOVERPOSITION =13;
 }

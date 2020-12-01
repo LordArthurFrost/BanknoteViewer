@@ -13,6 +13,9 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity
 {
     FragmentCatalogue fragmentCatalogue;
@@ -36,6 +39,18 @@ public class MainActivity extends AppCompatActivity
         FragmentHelper.openFragment(fragmentCatalogue);
         dataBaseManager = new DataBaseManager(this);
     }
+
+
+    public void transferMapFilterDialogtoShow(Map<Integer, String> map)
+    {
+        fragmentShowAndSearch.startSearch(map);
+    }
+
+    public void saveSetting(Map<Integer, String> map)
+    {
+        fragmentShowAndSearch.setSettingsMap(map);
+    }
+
 
     public void setNavigationBar()
     {

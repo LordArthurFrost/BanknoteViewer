@@ -70,73 +70,115 @@ public class DataBaseManager extends SQLiteOpenHelper
 
     }
 
+    public static void getSize(final ArrayList<String> stringArrayList, Runnable runnable)
+    {
+        new Thread(() -> {
+            Cursor cursor;
+
+            cursor = sqLiteDatabase.rawQuery("select distinct main.size from main", null);
+            cursor.moveToFirst();
+
+            while (cursor.moveToNext())
+            {
+                stringArrayList.add(cursor.getString(cursor.getColumnIndex("size")) + " мм");
+            }
+            cursor.close();
+            runnable.run();
+        }).start();
+
+    }
+
     public static void fillShortBanknoteInfoList(final List<ShortBanknoteInfo> shortBanknoteInfoList, Map<Integer, String> map, Runnable runnable)
     {
         new Thread(() -> {
-            StringBuilder basicQuery = new StringBuilder("select main._id, main.denomination, main.printYear, main.date, main.memorable, main.turnover from main ");
+            StringBuilder basicQuery = new StringBuilder("select main._id, main.denomination, main.printYear, main.date, main.memorable, main.size, main.turnover from main ");
             int counter = 0;
-            for (String value : map.values())
-            {
-                if (!value.equals(""))
-                {
-                    ++counter;
-                }
-            }
-
-            if (!Objects.equals(map.getOrDefault(ConstantsBanknote.MEMORABLE, ""), ""))
-            {
-                --counter;
-            }
-
-            String[] result = new String[counter];
-            counter = 0;
-
-            for (Integer i : map.keySet())
-            {
-                if (!Objects.equals(map.getOrDefault(i, ""), ""))
-                {
-                    if (counter != 0)
-                    {
-                        basicQuery.append("and ");
-                    } else
-                    {
-                        basicQuery.append("where ");
-                    }
-                    switch (i)
-                    {
-                        case ConstantsBanknote.DENOMINATION:
-                            basicQuery.append("main.denomination = ? ");
-                            result[counter] = map.get(i);
-                            ++counter;
-                            break;
-                        case ConstantsBanknote.PRINTYEAR:
-                            basicQuery.append("main.printYear = ? ");
-                            result[counter] = map.get(i);
-                            ++counter;
-                            break;
-                        case ConstantsBanknote.DATE:
-                            basicQuery.append("main.date = ? ");
-                            result[counter] = "`" + map.get(i) + "`";
-                            ++counter;
-                            break;
-                        case ConstantsBanknote.MEMORABLE:
-
-                            basicQuery.append("main.memorable is not null ");
-                            break;
-                        case ConstantsBanknote.TURNOVER:
-
-                            basicQuery.append("main.turnover = ? ");
-                            result[counter] = map.get(i);
-                            ++counter;
-                            break;
-                    }
-                }
-            }
-
-            map.clear();
-            shortBanknoteInfoList.clear();
             Cursor cursor;
-            cursor = sqLiteDatabase.rawQuery(basicQuery.toString() + " order by main.denomination ", result);
+            if (map != null)
+            {
+                for (String value : map.values())
+                {
+                    if (!value.equals(""))
+                    {
+                        ++counter;
+                    }
+                }
+
+                if (!Objects.equals(map.getOrDefault(ConstantsBanknote.MEMORABLE, ""), ""))
+                {
+                    --counter;
+                }
+
+                String[] result = new String[counter];
+                counter = 0;
+
+                for (Integer i : map.keySet())
+                {
+                    if (!Objects.equals(map.getOrDefault(i, ""), ""))
+                    {
+                        if (counter != 0)
+                        {
+                            basicQuery.append("and ");
+                        } else
+                        {
+                            basicQuery.append("where ");
+                        }
+                        switch (i)
+                        {
+                            case ConstantsBanknote.DENOMINATION:
+                                basicQuery.append("main.denomination = ? ");
+                                result[counter] = map.get(i);
+                                ++counter;
+                                break;
+                            case ConstantsBanknote.PRINTYEAR:
+                                basicQuery.append("main.printYear = ? ");
+                                result[counter] = map.get(i);
+                                ++counter;
+                                break;
+                            case ConstantsBanknote.DATE:
+                                basicQuery.append("main.date = ? ");
+                                result[counter] = "`" + map.get(i) + "`";
+                                ++counter;
+                                break;
+                            case ConstantsBanknote.MEMORABLE:
+                                if (map.get(i).equals(""))
+                                {
+                                    basicQuery.append("main.memorable is null ");
+                                } else
+                                {
+                                    basicQuery.append("main.memorable is not null ");
+                                }
+                                break;
+                            case ConstantsBanknote.TURNOVER:
+
+                                basicQuery.append("main.turnover = ? ");
+                                result[counter] = map.get(i);
+                                ++counter;
+                                break;
+                            case ConstantsBanknote.SIZEINFO:
+
+                                basicQuery.append("main.size = ? ");
+                                result[counter] = map.get(i);
+                                ++counter;
+                                break;
+                        }
+                    }
+                }
+
+                cursor = sqLiteDatabase.rawQuery(basicQuery.toString() + " order by main.denomination ", result);
+                map.clear();
+            } else
+            {
+                cursor = sqLiteDatabase.rawQuery(basicQuery.toString() + " order by main.denomination ", null);
+            }
+
+
+            if (!(shortBanknoteInfoList == null))
+            {
+                shortBanknoteInfoList.clear();
+            }
+
+
             cursor.moveToFirst();
             counter = 0;
             String memorable, turnover;

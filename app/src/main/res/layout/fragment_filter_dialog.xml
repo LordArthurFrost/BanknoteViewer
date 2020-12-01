@@ -65,9 +65,12 @@
             android:layout_height="wrap_content"
             android:layout_row="6"
             android:layout_column="1"
-            android:background="@drawable/roundbutton"
             android:layout_marginTop="10dp"
-            android:text="@string/btnfilterDialogDecline" />
+            android:background="@drawable/roundbutton"
+
+            android:text="@string/btnfilterDialogDecline"
+            android:textAllCaps="false"
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/etfilterDialogDenomination"
@@ -105,10 +108,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_row="6"
-            android:background="@drawable/roundbutton"
             android:layout_column="2"
             android:layout_marginTop="10dp"
-            android:text="@string/btnfilterDialogAccept" />
+            android:background="@drawable/roundbutton"
+            android:text="@string/btnfilterDialogAccept"
+            android:textAllCaps="false"
+            android:textSize="20sp" />
 
 
     </GridLayout>
