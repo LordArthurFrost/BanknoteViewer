@@ -53,10 +53,12 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         // Required empty public constructor
     }
 
+
     public void setSettingsMap(Map<Integer, String> settingsMap)
     {
         this.settingsMap = settingsMap;
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -99,6 +101,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         return view;
     }
 
+
     public void arrayListSizetoString(ArrayList<String> arrayList)
     {
         size = new String[arrayList.size() + 1];
@@ -109,6 +112,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
             size[i + 1] = arrayList.get(i);
         }
     }
+
 
     public void startSearch(Map<Integer, String> searchmap)
     {
@@ -207,6 +211,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         });
 
     }
+
 
     @Override
     public void onClick(View v)
