@@ -10,15 +10,16 @@
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_width="200dp"
+        android:layout_height="330dp"
         android:id="@+id/Me"
         android:layout_marginBottom="50dp" />
 
     <TextView
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="175dp"
+        android:layout_marginBottom="100dp"
         android:gravity="center_horizontal"
         android:text="@string/info_text"
         android:textColor="#ffffff"

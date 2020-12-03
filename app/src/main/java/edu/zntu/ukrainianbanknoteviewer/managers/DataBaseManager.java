@@ -182,10 +182,10 @@ public class DataBaseManager extends SQLiteOpenHelper
             }
             cursor.moveToFirst();
 
-            while (cursor.moveToNext())
+            do
             {
                 arrayList.add(cursor.getString(cursor.getColumnIndex(selectedColumn)));
-            }
+            }while (cursor.moveToNext());
             cursor.close();
             runnable.run();
         }).start();
