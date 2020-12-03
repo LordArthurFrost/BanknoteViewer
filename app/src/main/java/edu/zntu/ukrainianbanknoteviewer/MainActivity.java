@@ -1,20 +1,23 @@
 package edu.zntu.ukrainianbanknoteviewer;
 
-import androidx.annotation.NonNull;
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-
-import edu.zntu.ukrainianbanknoteviewer.fragments.*;
-import edu.zntu.ukrainianbanknoteviewer.managers.*;
-
-import android.content.Context;
-import android.os.Bundle;
-import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import edu.zntu.ukrainianbanknoteviewer.fragments.FragmentCatalogue;
+import edu.zntu.ukrainianbanknoteviewer.fragments.FragmentInfo;
+import edu.zntu.ukrainianbanknoteviewer.fragments.FragmentShowAndSearch;
+import edu.zntu.ukrainianbanknoteviewer.fragments.FragmentShowBanknote;
+import edu.zntu.ukrainianbanknoteviewer.managers.DataBaseManager;
+import edu.zntu.ukrainianbanknoteviewer.managers.FragmentHelper;
+
+import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -54,23 +57,27 @@ public class MainActivity extends AppCompatActivity
 
     public void setNavigationBar()
     {
+        Map <Integer, String> randomMap = new HashMap<>();
         fragmentCatalogue = new FragmentCatalogue();
         fragmentInfo = new FragmentInfo();
         fragmentShowAndSearch = new FragmentShowAndSearch();
-        fragmentShowBanknote = new FragmentShowBanknote();
         BottomNavigationView bottomNavigationView = findViewById(R.id.main_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId())
             {
                 case R.id.nav_random:
-                    //Функция для генерирования случайного запроса
-                    // FragmentHelper.changeFragment(fragmentRandom);
+
+                    fragmentShowBanknote = new FragmentShowBanknote();
+                    DataBaseManager.getAllInformation(randomMap, () -> runOnUiThread(() -> fragmentShowBanknote.setBanknoteInfo(randomMap)));
+                    randomMap.clear();
+                    FragmentHelper.openFragment(fragmentShowBanknote);
                     break;
                 case R.id.nav_search:
+
                     FragmentHelper.changeFragment(fragmentShowAndSearch);
                     break;
                 case R.id.nav_catalogue:
-                    FragmentHelper.changeFragment(fragmentCatalogue);
+                    //FragmentHelper.changeFragment(fragmentCatalogue);
                     break;
                 case R.id.nav_info:
                     FragmentHelper.changeFragment(fragmentInfo);

@@ -26,19 +26,6 @@ public class FragmentShowBanknote extends Fragment
     private ImageView ivBanknote;
     private String denomination, printYear, releaseDate, size = "Downloading Information...", turnover, descriptionAbver, descriptionRever, extra, protection, imageAbver, imageRever, memorable;
 
-    public void setBanknoteInfo(ShortBanknoteInfo shortBanknoteInfo)
-    {
-        this.denomination = shortBanknoteInfo.getDenomination();
-        int checkDenomination = Integer.parseInt(denomination);
-        setDenominationValue(checkDenomination);
-
-        this.printYear = "Рік початку печаті: " + shortBanknoteInfo.getPrintYear() + " рік";
-        this.releaseDate = "Дата випуску: " + shortBanknoteInfo.getReleaseDate();
-        this.turnover = shortBanknoteInfo.getActive();
-        this.imageAbver = shortBanknoteInfo.getImageAbver();
-        this.imageRever = shortBanknoteInfo.getImageRever();
-        this.memorable = shortBanknoteInfo.getMemorable();
-    }
 
     public void setDenominationValue(int checkDenomination)
     {
@@ -58,15 +45,54 @@ public class FragmentShowBanknote extends Fragment
         }
     }
 
+
+    //FragmentShowAndSearch
+    public void setBanknoteInfo(ShortBanknoteInfo shortBanknoteInfo)
+    {
+        this.denomination = shortBanknoteInfo.getDenomination();
+        int checkDenomination = Integer.parseInt(denomination);
+        setDenominationValue(checkDenomination);
+        this.printYear = "Рік початку печаті: " + shortBanknoteInfo.getPrintYear() + " рік";
+        this.releaseDate = "Дата випуску: " + shortBanknoteInfo.getReleaseDate();
+        this.turnover = shortBanknoteInfo.getActive();
+        this.imageAbver = shortBanknoteInfo.getImageAbver();
+        this.imageRever = shortBanknoteInfo.getImageRever();
+        this.memorable = shortBanknoteInfo.getMemorable();
+    }
+
+
+    //Random
+    public void setBanknoteInfo(Map<Integer, String> map)
+    {
+        this.denomination = map.get(ConstantsBanknote.DENOMINATION);
+        int checkDenomination = Integer.parseInt(denomination);
+        setDenominationValue(checkDenomination);
+
+        this.printYear = "Рік початку печаті: " + map.get(ConstantsBanknote.PRINTYEAR) + " рік";
+        this.releaseDate = "Дата випуску: " + map.get(ConstantsBanknote.DATE);
+        this.turnover = map.get(ConstantsBanknote.TURNOVER);
+        this.imageAbver = map.get(ConstantsBanknote.IDINFO);
+        this.imageRever = imageAbver + "1";
+        this.memorable = map.get(ConstantsBanknote.MEMORABLE);
+        this.descriptionAbver = map.get(ConstantsBanknote.DESCRIPTIONFRONT);
+        this.descriptionRever = map.get(ConstantsBanknote.DESCRIPTIONBACK);
+        this.protection = map.get(ConstantsBanknote.PROTECTIONINFO);
+        this.extra = map.get(ConstantsBanknote.EXTRAINFOINFO);
+        this.size = map.get(ConstantsBanknote.SIZEINFO) + " мм";
+        setUIContent();
+
+    }
+
+
     public FragmentShowBanknote()
     {
         // Required empty public constructor
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_show_banknote, container, false);
         tvDenomination = view.findViewById(R.id.tvshowdenomination);
         tvPrintYear = view.findViewById(R.id.tvshowprintyear);
@@ -82,8 +108,8 @@ public class FragmentShowBanknote extends Fragment
         tvExtra = view.findViewById(R.id.tvshowextra);
         tvProtection = view.findViewById(R.id.tvshowprotection);
 
-        setPrimeContent();
 
+        //Checking photograph
         AtomicBoolean checkerAbver = new AtomicBoolean(true);
         ivBanknote.setOnClickListener(v -> {
             if (checkerAbver.get())
@@ -102,7 +128,8 @@ public class FragmentShowBanknote extends Fragment
         return view;
     }
 
-    public void setPrimeContent()
+
+    public void setUIContent()
     {
         tvDenomination.setText(denomination);
         tvPrintYear.setText(printYear);
@@ -110,7 +137,13 @@ public class FragmentShowBanknote extends Fragment
         tvTurnover.setText(turnover);
         ivBanknote.setImageResource(R.drawable.ic_baseline_apps_24);
         tvMemorable.setText(memorable);
+        progressBar.setVisibility(View.GONE);
+        tvDescription.setText(descriptionAbver);
+        tvExtra.setText(extra);
+        tvSize.setText(size);
+        tvProtection.setText(protection);
     }
+
 
     public void setAdditionalContent(Map<Integer, String> map)
     {
@@ -119,12 +152,6 @@ public class FragmentShowBanknote extends Fragment
         this.protection = map.get(ConstantsBanknote.PROTECTIONINFO);
         this.extra = map.get(ConstantsBanknote.EXTRAINFOINFO);
         this.size = map.get(ConstantsBanknote.SIZEINFO) + " мм";
-
-        progressBar.setVisibility(View.GONE);
-
-        tvDescription.setText(descriptionAbver);
-        tvExtra.setText(extra);
-        tvSize.setText(size);
-        tvProtection.setText(protection);
+        setUIContent();
     }
 }

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 import edu.zntu.ukrainianbanknoteviewer.ConstantsBanknote;
 import edu.zntu.ukrainianbanknoteviewer.ShortBanknoteInfo;
@@ -38,6 +39,54 @@ public class DataBaseManager extends SQLiteOpenHelper
         open();
     }
 
+
+    public static void getAllInformation(final Map<Integer, String> map, Runnable runnable)
+    {
+        new Thread(() -> {
+            int randomRow;
+            Random random = new Random();
+            Cursor cursor = sqLiteDatabase.rawQuery("select main._id, main.denomination, main.printYear, main.date, description.front, description.back,description.protection, description.extra, main.size, main.turnover, main.Memorable " +
+                    "from main, description " +
+                    "where main._id = description._id", null);
+
+            String memorable, turnover;
+
+            cursor.moveToFirst();
+            randomRow = random.nextInt(cursor.getCount());
+            cursor.move(randomRow);
+
+            if (cursor.getString(cursor.getColumnIndex("memorable")) == null)
+            {
+                memorable = "Не пам'ятна";
+            } else
+            {
+                memorable = "Пам'ятна";
+            }
+            if (Integer.parseInt(cursor.getString(cursor.getColumnIndex("turnover"))) == 0)
+            {
+                turnover = "Вийшла з обігу";
+            } else
+            {
+                turnover = "Дійсна";
+            }
+
+            map.put(ConstantsBanknote.IDINFO, cursor.getString(cursor.getColumnIndex("_id")));
+            map.put(ConstantsBanknote.MEMORABLE, memorable);
+            map.put(ConstantsBanknote.DENOMINATION, cursor.getString(cursor.getColumnIndex("denomination")));
+            map.put(ConstantsBanknote.TURNOVER, turnover);
+            map.put(ConstantsBanknote.DATE, cursor.getString(cursor.getColumnIndex("date")));
+            map.put(ConstantsBanknote.PRINTYEAR, cursor.getString(cursor.getColumnIndex("printYear")));
+            map.put(ConstantsBanknote.DESCRIPTIONFRONT, cursor.getString(cursor.getColumnIndex("front")));
+            map.put(ConstantsBanknote.DESCRIPTIONBACK, cursor.getString(cursor.getColumnIndex("back")));
+            map.put(ConstantsBanknote.PROTECTIONINFO, cursor.getString(cursor.getColumnIndex("protection")));
+            map.put(ConstantsBanknote.EXTRAINFOINFO, cursor.getString(cursor.getColumnIndex("extra")));
+            map.put(ConstantsBanknote.SIZEINFO, cursor.getString(cursor.getColumnIndex("size")));
+            cursor.close();
+            runnable.run();
+        }).start();
+    }
+
+
     public static void getAutocompleteEditText(final ArrayList<String> autocompleteEditText, Runnable runnable)
     {
         new Thread(() -> {
@@ -56,15 +105,14 @@ public class DataBaseManager extends SQLiteOpenHelper
                 if (denomination == 2)
                 {
                     autocompleteEditText.add(i, denomination + " гривні " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
-
                 }
                 if (denomination > 2)
                 {
                     autocompleteEditText.add(i, denomination + " гривень " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
-
                 }
                 ++i;
             }
+            cursor.close();
             runnable.run();
         }).start();
 

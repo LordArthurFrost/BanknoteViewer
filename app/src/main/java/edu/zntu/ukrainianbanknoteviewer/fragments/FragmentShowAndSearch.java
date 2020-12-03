@@ -69,17 +69,20 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         settingsMap = new HashMap<>();
         btnFilters = view.findViewById(R.id.btnsearchfilter);
         btnFilters.setOnClickListener(this);
-
+        ArrayList<String> data = new ArrayList<>();
         ArrayList<String> dbsize = new ArrayList<>();
 
-        DataBaseManager.getSize(dbsize, () -> requireActivity().runOnUiThread(() -> {
-            arrayListSizetoString(dbsize);
+        try
+        {
+            DataBaseManager.getSize(dbsize, () -> requireActivity().runOnUiThread(() -> arrayListSizetoString(dbsize)));
 
-        }));
+            DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
 
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
-        ArrayList<String> data = new ArrayList<>();
-        DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
 
 
        /* DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, new Runnable()
@@ -129,27 +132,21 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
         shortBanknoteInfoAdapter = new ShortBanknoteInfoAdapter(getContext(), R.layout.listview_banknote, shortBanknoteInfoList);
         listView.setAdapter(shortBanknoteInfoAdapter);
         Log.d("FragmentSearch", "before onItemClickListener");
-        onItemClickListener = new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+        onItemClickListener = (parent, view, position, id) -> {
 
-                ShortBanknoteInfo selectedBanknote = (ShortBanknoteInfo) parent.getItemAtPosition(position);
+            ShortBanknoteInfo selectedBanknote = (ShortBanknoteInfo) parent.getItemAtPosition(position);
 
-                transfermap.put(ConstantsBanknote.IDINFO, selectedBanknote.getImageAbver());
+            transfermap.put(ConstantsBanknote.IDINFO, selectedBanknote.getImageAbver());
 
 
-                DataBaseManager.searchToShowTransfer(transfermap, () -> requireActivity().runOnUiThread(() -> fragmentShowBanknote.setAdditionalContent(transfermap)));
+            Log.d("FragmentSearch", selectedBanknote.getDenomination() + " " + selectedBanknote.getPrintYear());
 
+            fragmentShowBanknote = new FragmentShowBanknote();
+            fragmentShowBanknote.setBanknoteInfo(selectedBanknote);
 
-                Log.d("FragmentSearch", selectedBanknote.getDenomination() + " " + selectedBanknote.getPrintYear());
+            DataBaseManager.searchToShowTransfer(transfermap, () -> requireActivity().runOnUiThread(() -> fragmentShowBanknote.setAdditionalContent(transfermap)));
 
-                fragmentShowBanknote = new FragmentShowBanknote();
-                fragmentShowBanknote.setBanknoteInfo(selectedBanknote);
-                DataBaseManager.searchToShowTransfer(transfermap, () -> requireActivity().runOnUiThread(() -> fragmentShowBanknote.setAdditionalContent(transfermap)));
-                FragmentHelper.openFragment(fragmentShowBanknote);
-            }
+            FragmentHelper.openFragment(fragmentShowBanknote);
         };
         listView.setOnItemClickListener(onItemClickListener);
     }
