@@ -27,7 +27,7 @@ public class DataBaseManager extends SQLiteOpenHelper
     private final static String DATABASE_NAME = "banknotes.db";
     private static String DATABASE_PATH;
     private static SQLiteDatabase sqLiteDatabase;
-    private final  Context context;
+    private final Context context;
     //private static DataBaseManager instance;
 
    /* SingleTone Example
@@ -40,6 +40,21 @@ public class DataBaseManager extends SQLiteOpenHelper
         return instance;
     }
     */
+
+    public static String fixDenomination(int checkDenomination)
+    {
+        switch (checkDenomination)
+        {
+            case 1:
+                return checkDenomination + " Гривня";
+
+            case 2:
+                return checkDenomination + " Гривні";
+
+            default:
+                return checkDenomination + " Гривень";
+        }
+    }
 
 
     public DataBaseManager(Context context)
@@ -156,7 +171,7 @@ public class DataBaseManager extends SQLiteOpenHelper
             Cursor cursor;
             String selectedColumn;
 
-            if (isDenomination == true)
+            if (isDenomination)
             {
                 cursor = sqLiteDatabase.rawQuery("select distinct main.denomination from main", null);
                 selectedColumn = "denomination";
@@ -171,7 +186,7 @@ public class DataBaseManager extends SQLiteOpenHelper
             {
                 arrayList.add(cursor.getString(cursor.getColumnIndex(selectedColumn)));
             }
-
+            cursor.close();
             runnable.run();
         }).start();
 
@@ -275,6 +290,8 @@ public class DataBaseManager extends SQLiteOpenHelper
 
             do
             {
+
+
                 try
                 {
                     if (cursor.getString(cursor.getColumnIndex("memorable")) == null)
@@ -291,7 +308,7 @@ public class DataBaseManager extends SQLiteOpenHelper
                     {
                         turnover = "Дійсна";
                     }
-                    shortBanknoteInfoList.add(counter, new ShortBanknoteInfo(cursor.getString(cursor.getColumnIndex("_id")), cursor.getString(cursor.getColumnIndex("denomination")), cursor.getString(cursor.getColumnIndex("printYear")), cursor.getString(cursor.getColumnIndex("date")), memorable, turnover));
+                    shortBanknoteInfoList.add(counter, new ShortBanknoteInfo(cursor.getString(cursor.getColumnIndex("_id")), fixDenomination(Integer.parseInt(cursor.getString(cursor.getColumnIndex("denomination")))), cursor.getString(cursor.getColumnIndex("printYear")), cursor.getString(cursor.getColumnIndex("date")), memorable, turnover));
                     ++counter;
                 } catch (Exception e)
                 {

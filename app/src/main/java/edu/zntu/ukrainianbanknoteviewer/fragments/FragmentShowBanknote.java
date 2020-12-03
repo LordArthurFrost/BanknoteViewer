@@ -53,8 +53,6 @@ public class FragmentShowBanknote extends Fragment
     public void setBanknoteInfo(@NotNull ShortBanknoteInfo shortBanknoteInfo)
     {
         this.denomination = shortBanknoteInfo.getDenomination();
-        int checkDenomination = Integer.parseInt(denomination);
-        setDenominationValue(checkDenomination);
         this.printYear = "Рік початку печаті: " + shortBanknoteInfo.getPrintYear() + " рік";
         this.releaseDate = "Дата випуску: " + shortBanknoteInfo.getReleaseDate();
         this.turnover = shortBanknoteInfo.getActive();
