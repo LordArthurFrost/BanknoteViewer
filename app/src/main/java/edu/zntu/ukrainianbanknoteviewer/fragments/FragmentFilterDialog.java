@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -118,6 +117,7 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
         return view;
     }
 
+
     AdapterView.OnItemSelectedListener onItemSelectedListener = new AdapterView.OnItemSelectedListener()
     {
         @Override
@@ -157,7 +157,9 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
         sTurnover.setSelection(0);
         sSize.setSelection(0);
         settingsMap.clear();
+        mainActivity.clearInput();
     }
+
 
     public void setSearchFilters()
     {
@@ -226,8 +228,9 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
 
         this.dismiss();
         mainActivity.saveSetting(settingsMap);
-        mainActivity.transferMapFilterDialogtoShow(searchMap);
+        mainActivity.transferMapFilterDialogToShow(searchMap);
     }
+
 
     @Override
     public void onClick(View v)

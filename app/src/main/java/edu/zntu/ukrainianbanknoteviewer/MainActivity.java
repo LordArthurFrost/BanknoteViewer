@@ -16,17 +16,17 @@ import edu.zntu.ukrainianbanknoteviewer.fragments.FragmentShowAndSearch;
 import edu.zntu.ukrainianbanknoteviewer.fragments.FragmentShowBanknote;
 import edu.zntu.ukrainianbanknoteviewer.managers.DataBaseManager;
 import edu.zntu.ukrainianbanknoteviewer.managers.FragmentHelper;
+import edu.zntu.ukrainianbanknoteviewer.managers.ImageManager;
 
 import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity
 {
-    FragmentCatalogue fragmentCatalogue;
-    FragmentShowAndSearch fragmentShowAndSearch;
-    FragmentShowBanknote fragmentShowBanknote;
-    FragmentInfo fragmentInfo;
-    private FragmentManager fm;
-    private DataBaseManager dataBaseManager;
+    private FragmentCatalogue fragmentCatalogue;
+    private FragmentShowAndSearch fragmentShowAndSearch;
+    private FragmentShowBanknote fragmentShowBanknote;
+    private FragmentInfo fragmentInfo;
+    private ImageManager imageManager;
 
 
     @Override
@@ -35,16 +35,17 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //инциализация помошника по фрагментам
-        fm = getSupportFragmentManager();
+
+        FragmentManager fm = getSupportFragmentManager();
         FragmentHelper.init(fm, this);
         setNavigationBar();
         FragmentHelper.openFragment(fragmentCatalogue);
-        dataBaseManager = new DataBaseManager(this);
+        DataBaseManager dataBaseManager = new DataBaseManager(this);
+        imageManager = new ImageManager(this);
     }
 
 
-    public void transferMapFilterDialogtoShow(Map<Integer, String> map)
+    public void transferMapFilterDialogToShow(Map<Integer, String> map)
     {
         fragmentShowAndSearch.startSearch(map);
     }
@@ -54,13 +55,19 @@ public class MainActivity extends AppCompatActivity
         fragmentShowAndSearch.setSettingsMap(map);
     }
 
+    public void clearInput()
+    {
+        fragmentShowAndSearch.clearInput();
+    }
+
 
     public void setNavigationBar()
     {
-        Map <Integer, String> randomMap = new HashMap<>();
+        Map<Integer, String> randomMap = new HashMap<>();
         fragmentCatalogue = new FragmentCatalogue();
         fragmentInfo = new FragmentInfo();
         fragmentShowAndSearch = new FragmentShowAndSearch();
+        FragmentHelper.changeFragment(fragmentCatalogue);
         BottomNavigationView bottomNavigationView = findViewById(R.id.main_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId())
@@ -77,7 +84,7 @@ public class MainActivity extends AppCompatActivity
                     FragmentHelper.changeFragment(fragmentShowAndSearch);
                     break;
                 case R.id.nav_catalogue:
-                    //FragmentHelper.changeFragment(fragmentCatalogue);
+                    FragmentHelper.changeFragment(fragmentCatalogue);
                     break;
                 case R.id.nav_info:
                     FragmentHelper.changeFragment(fragmentInfo);

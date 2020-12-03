@@ -27,7 +27,19 @@ public class DataBaseManager extends SQLiteOpenHelper
     private final static String DATABASE_NAME = "banknotes.db";
     private static String DATABASE_PATH;
     private static SQLiteDatabase sqLiteDatabase;
-    private final Context context;
+    private final  Context context;
+    //private static DataBaseManager instance;
+
+   /* SingleTone Example
+   public static DataBaseManager getInstance(Context context)
+    {
+        if (instance == null)
+        {
+            instance = new DataBaseManager(context);
+        }
+        return instance;
+    }
+    */
 
 
     public DataBaseManager(Context context)
@@ -118,6 +130,7 @@ public class DataBaseManager extends SQLiteOpenHelper
 
     }
 
+
     public static void getSize(final ArrayList<String> stringArrayList, Runnable runnable)
     {
         new Thread(() -> {
@@ -135,6 +148,35 @@ public class DataBaseManager extends SQLiteOpenHelper
         }).start();
 
     }
+
+
+    public static void getDenominationOrPrintYear(final ArrayList<String> arrayList, Boolean isDenomination, Runnable runnable)
+    {
+        new Thread(() -> {
+            Cursor cursor;
+            String selectedColumn;
+
+            if (isDenomination == true)
+            {
+                cursor = sqLiteDatabase.rawQuery("select distinct main.denomination from main", null);
+                selectedColumn = "denomination";
+            } else
+            {
+                cursor = sqLiteDatabase.rawQuery("select distinct main.printYear from main order by main.printYear", null);
+                selectedColumn = "printYear";
+            }
+            cursor.moveToFirst();
+
+            while (cursor.moveToNext())
+            {
+                arrayList.add(cursor.getString(cursor.getColumnIndex(selectedColumn)));
+            }
+
+            runnable.run();
+        }).start();
+
+    }
+
 
     public static void fillShortBanknoteInfoList(final List<ShortBanknoteInfo> shortBanknoteInfoList, Map<Integer, String> map, Runnable runnable)
     {
@@ -261,6 +303,7 @@ public class DataBaseManager extends SQLiteOpenHelper
         }).start();
     }
 
+
     public static void searchToShowTransfer(final Map<Integer, String> transferMap, Runnable runnable)
     {
         new Thread(() -> {
@@ -321,6 +364,7 @@ public class DataBaseManager extends SQLiteOpenHelper
         }
     }
 
+
     public void open() throws SQLException
     {
 
@@ -328,11 +372,13 @@ public class DataBaseManager extends SQLiteOpenHelper
         Log.d("Database", "Opened Successfully");
     }
 
+
     @Override
     public void onCreate(SQLiteDatabase db)
     {
         //NULL
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)

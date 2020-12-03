@@ -41,7 +41,7 @@ public class ShortBanknoteInfoAdapter extends ArrayAdapter<ShortBanknoteInfo>
         TextView active = view.findViewById(R.id.lvactive);
 
         ShortBanknoteInfo banknote = banknotes.get(position);
-        banknoteImage.setImageResource(R.drawable.ic_baseline_folder_24);
+        banknoteImage.setImageDrawable(ImageManager.getImage(banknote.getImageAbver()));
         denomination.setText(banknote.getDenomination());
         printYear.setText(banknote.getPrintYear());
         releasedate.setText(banknote.getReleaseDate());

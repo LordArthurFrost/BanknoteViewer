@@ -2,7 +2,6 @@ package edu.zntu.ukrainianbanknoteviewer.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,18 +11,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 import edu.zntu.ukrainianbanknoteviewer.ConstantsBanknote;
 import edu.zntu.ukrainianbanknoteviewer.R;
@@ -38,7 +32,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     private FragmentShowBanknote fragmentShowBanknote;
     private View view;
     private List<ShortBanknoteInfo> shortBanknoteInfoList;
-    private Map<Integer, String> searchmap, transfermap, settingsMap;
+    private Map<Integer, String> searchMap, transferMap, settingsMap;
     private Button btnFilters;
     private AutoCompleteTextView autoCompleteTextView;
     private ListView listView;
@@ -63,27 +57,27 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        this.view = inflater.inflate(R.layout.fragment_show_and_search, container, false);
-        shortBanknoteInfoList = new ArrayList<>();
-        searchmap = new HashMap<>();
-        settingsMap = new HashMap<>();
-        btnFilters = view.findViewById(R.id.btnsearchfilter);
-        btnFilters.setOnClickListener(this);
-        ArrayList<String> data = new ArrayList<>();
-        ArrayList<String> dbsize = new ArrayList<>();
-
-        try
+        if(view == null)
         {
-            DataBaseManager.getSize(dbsize, () -> requireActivity().runOnUiThread(() -> arrayListSizetoString(dbsize)));
+            view = inflater.inflate(R.layout.fragment_show_and_search, container, false);
+            shortBanknoteInfoList = new ArrayList<>();
+            searchMap = new HashMap<>();
+            settingsMap = new HashMap<>();
+            btnFilters = view.findViewById(R.id.btnsearchfilter);
+            btnFilters.setOnClickListener(this);
+            ArrayList<String> data = new ArrayList<>();
+            ArrayList<String> dbsize = new ArrayList<>();
 
-            DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
+            try
+            {
+                DataBaseManager.getSize(dbsize, () -> requireActivity().runOnUiThread(() -> arrayListSizetoString(dbsize)));
 
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+                DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
 
-
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
 
        /* DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, new Runnable()
         {
@@ -101,6 +95,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
             }
         });*/
 
+        }
         return view;
     }
 
@@ -117,16 +112,24 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     }
 
 
+    public void clearInput()
+    {
+        autoCompleteTextView.setText("");
+        settingsMap.clear();
+        startSearch(searchMap);
+    }
+
+
     public void startSearch(Map<Integer, String> searchmap)
     {
-        this.searchmap = searchmap;
+        this.searchMap = searchmap;
         DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
     }
 
 
     public void setBanknoteList()
     {
-        transfermap = new HashMap<>();
+        transferMap = new HashMap<>();
         Log.d("FragmentSearch", "setBanknoteList()");
         listView = view.findViewById(R.id.listshowandsearch);
         shortBanknoteInfoAdapter = new ShortBanknoteInfoAdapter(getContext(), R.layout.listview_banknote, shortBanknoteInfoList);
@@ -136,7 +139,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
             ShortBanknoteInfo selectedBanknote = (ShortBanknoteInfo) parent.getItemAtPosition(position);
 
-            transfermap.put(ConstantsBanknote.IDINFO, selectedBanknote.getImageAbver());
+            transferMap.put(ConstantsBanknote.IDINFO, selectedBanknote.getImageAbver());
 
 
             Log.d("FragmentSearch", selectedBanknote.getDenomination() + " " + selectedBanknote.getPrintYear());
@@ -144,7 +147,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
             fragmentShowBanknote = new FragmentShowBanknote();
             fragmentShowBanknote.setBanknoteInfo(selectedBanknote);
 
-            DataBaseManager.searchToShowTransfer(transfermap, () -> requireActivity().runOnUiThread(() -> fragmentShowBanknote.setAdditionalContent(transfermap)));
+            DataBaseManager.searchToShowTransfer(transferMap, () -> requireActivity().runOnUiThread(() -> fragmentShowBanknote.setAdditionalContent(transferMap)));
 
             FragmentHelper.openFragment(fragmentShowBanknote);
         };
@@ -180,27 +183,27 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
                     case 1:
                         if (getSearch[0].matches("\\d{4}"))
                         {
-                            searchmap.put(ConstantsBanknote.PRINTYEAR, getSearch[0]);
+                            searchMap.put(ConstantsBanknote.PRINTYEAR, getSearch[0]);
                         } else
                         {
-                            searchmap.put(ConstantsBanknote.DENOMINATION, getSearch[0]);
+                            searchMap.put(ConstantsBanknote.DENOMINATION, getSearch[0]);
                         }
 
                         break;
                     case 2:
                         if (getSearch[0].matches("\\d{4}"))
                         {
-                            searchmap.put(ConstantsBanknote.PRINTYEAR, getSearch[0]);
-                            searchmap.put(ConstantsBanknote.DENOMINATION, getSearch[1]);
+                            searchMap.put(ConstantsBanknote.PRINTYEAR, getSearch[0]);
+                            searchMap.put(ConstantsBanknote.DENOMINATION, getSearch[1]);
                         } else
                         {
-                            searchmap.put(ConstantsBanknote.PRINTYEAR, getSearch[1]);
-                            searchmap.put(ConstantsBanknote.DENOMINATION, getSearch[0]);
+                            searchMap.put(ConstantsBanknote.PRINTYEAR, getSearch[1]);
+                            searchMap.put(ConstantsBanknote.DENOMINATION, getSearch[0]);
                         }
                         break;
                 }
 
-                startSearch(searchmap);
+                startSearch(searchMap);
 
                 return true;
             }

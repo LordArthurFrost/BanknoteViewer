@@ -11,12 +11,15 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import edu.zntu.ukrainianbanknoteviewer.ConstantsBanknote;
 import edu.zntu.ukrainianbanknoteviewer.R;
 import edu.zntu.ukrainianbanknoteviewer.ShortBanknoteInfo;
+import edu.zntu.ukrainianbanknoteviewer.managers.ImageManager;
 
 public class FragmentShowBanknote extends Fragment
 {
@@ -47,7 +50,7 @@ public class FragmentShowBanknote extends Fragment
 
 
     //FragmentShowAndSearch
-    public void setBanknoteInfo(ShortBanknoteInfo shortBanknoteInfo)
+    public void setBanknoteInfo(@NotNull ShortBanknoteInfo shortBanknoteInfo)
     {
         this.denomination = shortBanknoteInfo.getDenomination();
         int checkDenomination = Integer.parseInt(denomination);
@@ -62,7 +65,7 @@ public class FragmentShowBanknote extends Fragment
 
 
     //Random
-    public void setBanknoteInfo(Map<Integer, String> map)
+    public void setBanknoteInfo(@org.jetbrains.annotations.NotNull Map<Integer, String> map)
     {
         this.denomination = map.get(ConstantsBanknote.DENOMINATION);
         int checkDenomination = Integer.parseInt(denomination);
@@ -91,7 +94,7 @@ public class FragmentShowBanknote extends Fragment
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         view = inflater.inflate(R.layout.fragment_show_banknote, container, false);
         tvDenomination = view.findViewById(R.id.tvshowdenomination);
@@ -114,12 +117,12 @@ public class FragmentShowBanknote extends Fragment
         ivBanknote.setOnClickListener(v -> {
             if (checkerAbver.get())
             {
-                ivBanknote.setImageResource(R.drawable.ic_baseline_folder_24);
+                ivBanknote.setImageDrawable(ImageManager.getImage(imageRever));
                 tvDescription.setText(descriptionRever);
                 checkerAbver.set(false);
             } else
             {
-                ivBanknote.setImageResource(R.drawable.ic_baseline_apps_24);
+                ivBanknote.setImageDrawable(ImageManager.getImage(imageAbver));
                 tvDescription.setText(descriptionAbver);
                 checkerAbver.set(true);
             }
@@ -131,11 +134,12 @@ public class FragmentShowBanknote extends Fragment
 
     public void setUIContent()
     {
+
+        ivBanknote.setImageDrawable(ImageManager.getImage(imageAbver));
         tvDenomination.setText(denomination);
         tvPrintYear.setText(printYear);
         tvReleaseDate.setText(releaseDate);
         tvTurnover.setText(turnover);
-        ivBanknote.setImageResource(R.drawable.ic_baseline_apps_24);
         tvMemorable.setText(memorable);
         progressBar.setVisibility(View.GONE);
         tvDescription.setText(descriptionAbver);
@@ -145,7 +149,7 @@ public class FragmentShowBanknote extends Fragment
     }
 
 
-    public void setAdditionalContent(Map<Integer, String> map)
+    public void setAdditionalContent(@NotNull Map<Integer, String> map)
     {
         this.descriptionAbver = map.get(ConstantsBanknote.DESCRIPTIONFRONT);
         this.descriptionRever = map.get(ConstantsBanknote.DESCRIPTIONBACK);
