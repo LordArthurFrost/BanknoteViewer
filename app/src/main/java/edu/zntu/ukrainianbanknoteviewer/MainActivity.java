@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity
                     FragmentHelper.openFragment(fragmentShowBanknote);
                     break;
                 case R.id.nav_search:
-
                     FragmentHelper.changeFragment(fragmentShowAndSearch);
                     break;
                 case R.id.nav_catalogue:

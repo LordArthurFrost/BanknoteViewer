@@ -125,18 +125,7 @@ public class DataBaseManager extends SQLiteOpenHelper
             while (cursor.moveToNext())
             {
                 denomination = Integer.parseInt(cursor.getString(cursor.getColumnIndex("denomination")));
-                if (denomination == 1)
-                {
-                    autocompleteEditText.add(i, denomination + " гривня " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
-                }
-                if (denomination == 2)
-                {
-                    autocompleteEditText.add(i, denomination + " гривні " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
-                }
-                if (denomination > 2)
-                {
-                    autocompleteEditText.add(i, denomination + " гривень " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
-                }
+                autocompleteEditText.add(i, fixDenomination(denomination) + " " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
                 ++i;
             }
             cursor.close();
@@ -185,7 +174,7 @@ public class DataBaseManager extends SQLiteOpenHelper
             do
             {
                 arrayList.add(cursor.getString(cursor.getColumnIndex(selectedColumn)));
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
             cursor.close();
             runnable.run();
         }).start();
