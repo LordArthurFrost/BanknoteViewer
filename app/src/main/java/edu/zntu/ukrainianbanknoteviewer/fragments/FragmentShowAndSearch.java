@@ -57,7 +57,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        if(view == null)
+        if (view == null)
         {
             view = inflater.inflate(R.layout.fragment_show_and_search, container, false);
             shortBanknoteInfoList = new ArrayList<>();
@@ -184,6 +184,11 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
                     case 1:
                         if (getSearch[0].matches("\\d{4}"))
                         {
+                            if (getSearch[0].equals("1000"))
+                            {
+                                searchMap.put(ConstantsBanknote.DENOMINATION, getSearch[0]);
+                                break;
+                            }
                             searchMap.put(ConstantsBanknote.PRINTYEAR, getSearch[0]);
                         } else
                         {
@@ -194,6 +199,12 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
                     case 2:
                         if (getSearch[0].matches("\\d{4}"))
                         {
+                            if (getSearch[0].equals("1000"))
+                            {
+                                searchMap.put(ConstantsBanknote.PRINTYEAR, getSearch[1]);
+                                searchMap.put(ConstantsBanknote.DENOMINATION, getSearch[0]);
+                                break;
+                            }
                             searchMap.put(ConstantsBanknote.PRINTYEAR, getSearch[0]);
                             searchMap.put(ConstantsBanknote.DENOMINATION, getSearch[1]);
                         } else
