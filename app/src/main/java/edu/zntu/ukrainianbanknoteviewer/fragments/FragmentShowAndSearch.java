@@ -122,6 +122,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
     public void startSearch(Map<Integer, String> searchmap)
     {
+        autoCompleteTextView.setText("");
         this.searchMap = searchmap;
         DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
     }
