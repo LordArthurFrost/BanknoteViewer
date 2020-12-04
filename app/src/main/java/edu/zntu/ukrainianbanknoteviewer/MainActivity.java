@@ -67,14 +67,13 @@ public class MainActivity extends AppCompatActivity
         fragmentCatalogue = new FragmentCatalogue();
         fragmentInfo = new FragmentInfo();
         fragmentShowAndSearch = new FragmentShowAndSearch();
+        fragmentShowBanknote = new FragmentShowBanknote();
         FragmentHelper.changeFragment(fragmentCatalogue);
         BottomNavigationView bottomNavigationView = findViewById(R.id.main_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId())
             {
                 case R.id.nav_random:
-
-                    fragmentShowBanknote = new FragmentShowBanknote();
                     DataBaseManager.getAllInformation(randomMap, () -> runOnUiThread(() -> fragmentShowBanknote.setBanknoteInfo(randomMap)));
                     randomMap.clear();
                     FragmentHelper.openFragment(fragmentShowBanknote);

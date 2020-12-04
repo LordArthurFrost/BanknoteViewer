@@ -48,6 +48,7 @@ public class FragmentCatalogueItems extends Fragment
             progressBar = view.findViewById(R.id.catalogueitemsprogressbar);
             listView = view.findViewById(R.id.lvcatalogueitems);
 
+            fragmentShowBanknote = new FragmentShowBanknote();
             searchMap = new HashMap<>();
         }
 
@@ -69,7 +70,7 @@ public class FragmentCatalogueItems extends Fragment
 
             Log.d("FragmentSearch", selectedBanknote.getDenomination() + " " + selectedBanknote.getPrintYear());
 
-            fragmentShowBanknote = new FragmentShowBanknote();
+
             fragmentShowBanknote.setBanknoteInfo(selectedBanknote);
 
             DataBaseManager.searchToShowTransfer(searchMap, () -> requireActivity().runOnUiThread(() -> fragmentShowBanknote.setAdditionalContent(searchMap)));
