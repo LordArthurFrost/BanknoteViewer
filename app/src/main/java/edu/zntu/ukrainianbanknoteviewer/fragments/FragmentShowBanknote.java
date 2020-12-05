@@ -27,33 +27,30 @@ public class FragmentShowBanknote extends Fragment
     private ProgressBar progressBar;
     private TextView tvDenomination, tvPrintYear, tvReleaseDate, tvSize, tvTurnover, tvDescription, tvExtra, tvProtection, tvMemorable;
     private ImageView ivBanknote;
-    private String denomination, printYear, releaseDate, size = "Downloading Information...", turnover, descriptionAbver, descriptionRever, extra, protection, imageAbver, imageRever, memorable;
+    private String denomination, printYear, releaseDate, size = "Downloading Information...",
+            turnover, descriptionAbver, descriptionRever, extra, protection, imageAbver, imageRever, memorable, isBanknote,
+            printYearAdditional;
 
-
-    public void setDenominationValue(int checkDenomination)
+    public void setPrintYearAdditional()
     {
-        switch (checkDenomination)
+        if (isBanknote.equals("1"))
         {
-            case 1:
-                this.denomination = denomination + " Гривня";
-                break;
-
-            case 2:
-                this.denomination = denomination + " Гривні";
-                break;
-
-            default:
-                this.denomination = denomination + " Гривень";
-                break;
+            printYearAdditional = "Рік початку печаті: ";
+        } else
+        {
+            printYearAdditional = "Рік початку карбування: ";
         }
     }
-
 
     //FragmentShowAndSearch
     public void setBanknoteInfo(@NotNull ShortBanknoteInfo shortBanknoteInfo)
     {
+        this.isBanknote = shortBanknoteInfo.getIsBanknote();
+
+        setPrintYearAdditional();
+
         this.denomination = shortBanknoteInfo.getDenomination();
-        this.printYear = "Рік початку печаті: " + shortBanknoteInfo.getPrintYear() + " рік";
+        this.printYear = printYearAdditional + shortBanknoteInfo.getPrintYear() + " рік";
         this.releaseDate = "Дата випуску: " + shortBanknoteInfo.getReleaseDate();
         this.turnover = shortBanknoteInfo.getActive();
         this.imageAbver = shortBanknoteInfo.getImageAbver();
@@ -65,11 +62,12 @@ public class FragmentShowBanknote extends Fragment
     //Random
     public void setBanknoteInfo(@org.jetbrains.annotations.NotNull Map<Integer, String> map)
     {
-        this.denomination = map.get(ConstantsBanknote.DENOMINATION);
-        int checkDenomination = Integer.parseInt(denomination);
-        setDenominationValue(checkDenomination);
+        this.isBanknote = map.get(ConstantsBanknote.ISBANKNOTE);
 
-        this.printYear = "Рік початку печаті: " + map.get(ConstantsBanknote.PRINTYEAR) + " рік";
+        setPrintYearAdditional();
+
+        this.denomination = map.get(ConstantsBanknote.DENOMINATION);
+        this.printYear = printYearAdditional + map.get(ConstantsBanknote.PRINTYEAR) + " рік";
         this.releaseDate = "Дата випуску: " + map.get(ConstantsBanknote.DATE);
         this.turnover = map.get(ConstantsBanknote.TURNOVER);
         this.imageAbver = map.get(ConstantsBanknote.IDINFO);
@@ -80,14 +78,13 @@ public class FragmentShowBanknote extends Fragment
         this.protection = map.get(ConstantsBanknote.PROTECTIONINFO);
         this.extra = map.get(ConstantsBanknote.EXTRAINFOINFO);
         this.size = map.get(ConstantsBanknote.SIZEINFO) + " мм";
+        this.isBanknote = map.get(ConstantsBanknote.ISBANKNOTE);
         setUIContent();
-
     }
 
 
     public FragmentShowBanknote()
     {
-        // Required empty public constructor
     }
 
 

@@ -8,16 +8,34 @@
     android:orientation="vertical"
     tools:context=".fragments.FragmentCatalogue">
 
-    <Button
-        android:layout_marginTop="5dp"
-        style="@style/Buttons"
-        android:background="@drawable/roundbutton"
-        android:id="@+id/btncatalogueswitch"
-        />
-
-    <ListView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/lvcatalogue"/>
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btncatalogueswitchtype"
+            android:layout_width="match_parent"
+            style="@style/Buttons"
+            android:layout_marginHorizontal="5dp"
+            android:layout_weight="2"
+            android:background="@drawable/roundbutton" />
+
+        <Button
+            android:id="@+id/btncataloguedenominyearswitch"
+            style="@style/Buttons"
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/roundbutton" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lvcatalogue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

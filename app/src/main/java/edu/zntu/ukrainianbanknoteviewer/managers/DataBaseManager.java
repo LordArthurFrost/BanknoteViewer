@@ -28,31 +28,41 @@ public class DataBaseManager extends SQLiteOpenHelper
     private static String DATABASE_PATH;
     private static SQLiteDatabase sqLiteDatabase;
     private final Context context;
-    //private static DataBaseManager instance;
 
-   /* SingleTone Example
-   public static DataBaseManager getInstance(Context context)
+
+    public static String fixDenomination(int denomination, int type)
     {
-        if (instance == null)
+        if (denomination >= 100 && type == 0)
         {
-            instance = new DataBaseManager(context);
+            denomination /= 100;
+            type = 1;
         }
-        return instance;
-    }
-    */
-
-    public static String fixDenomination(int checkDenomination)
-    {
-        switch (checkDenomination)
+        if (type == 1)
         {
-            case 1:
-                return checkDenomination + " Гривня";
+            switch (denomination)
+            {
+                case 1:
+                    return denomination + " Гривня";
 
-            case 2:
-                return checkDenomination + " Гривні";
+                case 2:
+                    return denomination + " Гривні";
 
-            default:
-                return checkDenomination + " Гривень";
+                default:
+                    return denomination + " Гривень";
+            }
+        } else
+        {
+            switch (denomination)
+            {
+                case 1:
+                    return denomination + " Копійка";
+
+                case 2:
+                    return denomination + " Копійки";
+
+                default:
+                    return denomination + " Копійок";
+            }
         }
     }
 
@@ -72,9 +82,9 @@ public class DataBaseManager extends SQLiteOpenHelper
         new Thread(() -> {
             int randomRow;
             Random random = new Random();
-            Cursor cursor = sqLiteDatabase.rawQuery("select main._id, main.denomination, main.printYear, main.date, description.front, description.back,description.protection, description.extra, main.size, main.turnover, main.Memorable " +
+            Cursor cursor = sqLiteDatabase.rawQuery("select main._id, main.denomination, main.printYear, main.date, description.front, description.back,description.protection, description.extra, main.size, main.turnover, main.Memorable, main.isBanknote, main.isBanknote " +
                     "from main, description " +
-                    "where main._id = description._id", null);
+                    "where main.codeDescription = description._id", null);
 
             String memorable, turnover;
 
@@ -99,7 +109,7 @@ public class DataBaseManager extends SQLiteOpenHelper
 
             map.put(ConstantsBanknote.IDINFO, cursor.getString(cursor.getColumnIndex("_id")));
             map.put(ConstantsBanknote.MEMORABLE, memorable);
-            map.put(ConstantsBanknote.DENOMINATION, cursor.getString(cursor.getColumnIndex("denomination")));
+            map.put(ConstantsBanknote.DENOMINATION, fixDenomination(Integer.parseInt(cursor.getString(cursor.getColumnIndex("denomination"))), Integer.parseInt(cursor.getString(cursor.getColumnIndex("isBanknote")))));
             map.put(ConstantsBanknote.TURNOVER, turnover);
             map.put(ConstantsBanknote.DATE, cursor.getString(cursor.getColumnIndex("date")));
             map.put(ConstantsBanknote.PRINTYEAR, cursor.getString(cursor.getColumnIndex("printYear")));
@@ -108,6 +118,7 @@ public class DataBaseManager extends SQLiteOpenHelper
             map.put(ConstantsBanknote.PROTECTIONINFO, cursor.getString(cursor.getColumnIndex("protection")));
             map.put(ConstantsBanknote.EXTRAINFOINFO, cursor.getString(cursor.getColumnIndex("extra")));
             map.put(ConstantsBanknote.SIZEINFO, cursor.getString(cursor.getColumnIndex("size")));
+            map.put(ConstantsBanknote.ISBANKNOTE, cursor.getString(cursor.getColumnIndex("isBanknote")));
             cursor.close();
             runnable.run();
         }).start();
@@ -117,15 +128,16 @@ public class DataBaseManager extends SQLiteOpenHelper
     public static void getAutocompleteEditText(final ArrayList<String> autocompleteEditText, Runnable runnable)
     {
         new Thread(() -> {
-            Cursor cursor = sqLiteDatabase.rawQuery("select main.denomination, main.printYear " +
+            Cursor cursor = sqLiteDatabase.rawQuery("select main.denomination, main.printYear, main.isBanknote " +
                     "from main", null);
 
             cursor.moveToFirst();
-            int i = 0, denomination;
+            int i = 0, denomination, isBanknote;
             while (cursor.moveToNext())
             {
                 denomination = Integer.parseInt(cursor.getString(cursor.getColumnIndex("denomination")));
-                autocompleteEditText.add(i, fixDenomination(denomination) + " " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
+                isBanknote = Integer.parseInt(cursor.getString(cursor.getColumnIndex("isBanknote")));
+                autocompleteEditText.add(i, fixDenomination(denomination, isBanknote) + " " + cursor.getString(cursor.getColumnIndex("printYear")) + " року");
                 ++i;
             }
             cursor.close();
@@ -135,12 +147,21 @@ public class DataBaseManager extends SQLiteOpenHelper
     }
 
 
-    public static void getSize(final ArrayList<String> stringArrayList, Runnable runnable)
+    public static void getSize(final ArrayList<String> stringArrayList, String type, Runnable runnable)
     {
         new Thread(() -> {
             Cursor cursor;
 
-            cursor = sqLiteDatabase.rawQuery("select distinct main.size from main", null);
+            stringArrayList.clear();
+
+            if (type.equals(""))
+            {
+                cursor = sqLiteDatabase.rawQuery("select distinct main.size, main.isBanknote from main", null);
+            } else
+            {
+                cursor = sqLiteDatabase.rawQuery("select distinct main.size, main.isBanknote from main where main.isBanknote = ?", new String[]{type});
+            }
+
             cursor.moveToFirst();
 
             while (cursor.moveToNext())
@@ -150,11 +171,10 @@ public class DataBaseManager extends SQLiteOpenHelper
             cursor.close();
             runnable.run();
         }).start();
-
     }
 
 
-    public static void getDenominationOrPrintYear(final ArrayList<String> arrayList, Boolean isDenomination, Runnable runnable)
+    public static void getDenominationOrPrintYear(final ArrayList<String> arrayList, Boolean isDenomination, int isBanknote, Runnable runnable)
     {
         new Thread(() -> {
             Cursor cursor;
@@ -162,19 +182,24 @@ public class DataBaseManager extends SQLiteOpenHelper
 
             if (isDenomination)
             {
-                cursor = sqLiteDatabase.rawQuery("select distinct main.denomination from main", null);
+                cursor = sqLiteDatabase.rawQuery("select distinct main.denomination, main.isBanknote from main where main.isBanknote = ?", new String[]{String.valueOf(isBanknote)});
                 selectedColumn = "denomination";
+                cursor.moveToFirst();
+                do
+                {
+                    arrayList.add(fixDenomination(Integer.parseInt(cursor.getString(cursor.getColumnIndex(selectedColumn))),
+                            Integer.parseInt(cursor.getString(cursor.getColumnIndex("isBanknote")))));
+                } while (cursor.moveToNext());
             } else
             {
-                cursor = sqLiteDatabase.rawQuery("select distinct main.printYear from main order by main.printYear", null);
+                cursor = sqLiteDatabase.rawQuery("select distinct main.printYear, main.isBanknote from main where main.isBanknote = ? order by main.printYear", new String[]{String.valueOf(isBanknote)});
                 selectedColumn = "printYear";
+                cursor.moveToFirst();
+                do
+                {
+                    arrayList.add(cursor.getString(cursor.getColumnIndex(selectedColumn)) + " рік");
+                } while (cursor.moveToNext());
             }
-            cursor.moveToFirst();
-
-            do
-            {
-                arrayList.add(cursor.getString(cursor.getColumnIndex(selectedColumn)));
-            } while (cursor.moveToNext());
             cursor.close();
             runnable.run();
         }).start();
@@ -185,7 +210,7 @@ public class DataBaseManager extends SQLiteOpenHelper
     public static void fillShortBanknoteInfoList(final List<ShortBanknoteInfo> shortBanknoteInfoList, Map<Integer, String> map, Runnable runnable)
     {
         new Thread(() -> {
-            StringBuilder basicQuery = new StringBuilder("select main._id, main.denomination, main.printYear, main.date, main.memorable, main.size, main.turnover from main ");
+            StringBuilder basicQuery = new StringBuilder("select main._id, main.denomination, main.printYear, main.date, main.memorable, main.size, main.turnover, main.isBanknote from main ");
             int counter = 0;
             Cursor cursor;
             if (map != null)
@@ -255,15 +280,32 @@ public class DataBaseManager extends SQLiteOpenHelper
                                 result[counter] = map.get(i);
                                 ++counter;
                                 break;
+                            case ConstantsBanknote.ISBANKNOTE:
+
+                                basicQuery.append("main.isBanknote = ? ");
+                                result[counter] = map.get(i);
+                                ++counter;
+                                break;
+                            case ConstantsBanknote.IDINFO:
+
+                                basicQuery.append("main._id = ? ");
+                                result[counter] = map.get(i);
+                                ++counter;
+                                break;
+                            case ConstantsBanknote.ISHRYVNYA:
+                                basicQuery.append("main.isHryvnya = ? ");
+                                result[counter] = map.get(i);
+                                ++counter;
+                                break;
                         }
                     }
                 }
 
-                cursor = sqLiteDatabase.rawQuery(basicQuery.toString() + " order by main.denomination ", result);
+                cursor = sqLiteDatabase.rawQuery(basicQuery.toString() + " order by main.isBanknote, main.denomination", result);
                 map.clear();
             } else
             {
-                cursor = sqLiteDatabase.rawQuery(basicQuery.toString() + " order by main.denomination ", null);
+                cursor = sqLiteDatabase.rawQuery(basicQuery.toString() + " order by main.isBanknote, main.denomination ", null);
             }
 
 
@@ -279,8 +321,6 @@ public class DataBaseManager extends SQLiteOpenHelper
 
             do
             {
-
-
                 try
                 {
                     if (cursor.getString(cursor.getColumnIndex("memorable")) == null)
@@ -297,7 +337,15 @@ public class DataBaseManager extends SQLiteOpenHelper
                     {
                         turnover = "Дійсна";
                     }
-                    shortBanknoteInfoList.add(counter, new ShortBanknoteInfo(cursor.getString(cursor.getColumnIndex("_id")), fixDenomination(Integer.parseInt(cursor.getString(cursor.getColumnIndex("denomination")))), cursor.getString(cursor.getColumnIndex("printYear")), cursor.getString(cursor.getColumnIndex("date")), memorable, turnover));
+                    shortBanknoteInfoList.add(counter,
+                            new ShortBanknoteInfo(cursor.getString(cursor.getColumnIndex("_id")),
+                                    fixDenomination(Integer.parseInt(cursor.getString(cursor.getColumnIndex("denomination"))),
+                                            (Integer.parseInt(cursor.getString(cursor.getColumnIndex("isBanknote"))))),
+                                    cursor.getString(cursor.getColumnIndex("printYear")),
+                                    cursor.getString(cursor.getColumnIndex("date")),
+                                    memorable,
+                                    turnover,
+                                    cursor.getString(cursor.getColumnIndex("isBanknote"))));
                     ++counter;
                 } catch (Exception e)
                 {
@@ -316,7 +364,7 @@ public class DataBaseManager extends SQLiteOpenHelper
             Cursor cursor;
             String basicQuery = "select main.size, description.front, description.back, description.protection, description.extra " +
                     "from main, description " +
-                    "where main._id = description._id and main._id = ?";
+                    "where main.codeDescription = description._id and main._id = ?";
             cursor = sqLiteDatabase.rawQuery(basicQuery, new String[]{String.valueOf(transferMap.get(ConstantsBanknote.IDINFO))});
             cursor.moveToFirst();
             transferMap.put(ConstantsBanknote.DESCRIPTIONFRONT, cursor.getString(cursor.getColumnIndex("front")));
@@ -325,8 +373,9 @@ public class DataBaseManager extends SQLiteOpenHelper
             transferMap.put(ConstantsBanknote.EXTRAINFOINFO, cursor.getString(cursor.getColumnIndex("extra")));
             transferMap.put(ConstantsBanknote.SIZEINFO, cursor.getString(cursor.getColumnIndex("size")));
 
-            runnable.run();
             cursor.close();
+            runnable.run();
+
         }).start();
 
     }

@@ -12,75 +12,115 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.zntu.ukrainianbanknoteviewer.ConstantsBanknote;
 import edu.zntu.ukrainianbanknoteviewer.MainActivity;
 import edu.zntu.ukrainianbanknoteviewer.R;
+import edu.zntu.ukrainianbanknoteviewer.managers.DataBaseManager;
 
 
 public class FragmentFilterDialog extends DialogFragment implements View.OnClickListener
 {
     private View view;
-    private static String[] turnover, memorable, size;
-    private static int sizePosition, turnoverPosition, memorablePosition;
+    private static String[] turnover, memorable, size, isBanknote;
+    private static int sizePosition, turnoverPosition, memorablePosition, isBanknotePosition;
     private EditText etDenomination, etPrintYear, etReleaseDate;
-    private Spinner sMemorable, sTurnover, sSize;
+    private Spinner sMemorable, sTurnover, sSize, sType;
     private Button btnCancel, btnSearch;
+    private static final String BANKNOTE = "1", COIN = "0", NOTHING = "";
     private MainActivity mainActivity;
     private Map<Integer, String> searchMap, settingsMap;
+    private TextView tvisHryvya;
+    private CheckBox cbisHryvnya;
+    ArrayList<String> dbSize;
 
     public FragmentFilterDialog()
     {
-        //
     }
 
-    public static Fragment newInstance(String denomination, String printYear, String releaseDate, String[] size, int memorablePosition, int sizePosition, int turnoverPosition)
+    public static Fragment newInstance(Map<Integer, String> settingsMap)
     {
         FragmentFilterDialog fragmentFilterDialog = new FragmentFilterDialog();
         Bundle args = new Bundle();
 
-        args.putString("denomination", denomination);
-        args.putString("printYear", printYear);
-        args.putString("releaseDate", releaseDate);
+        args.putString("denomination", settingsMap.getOrDefault(ConstantsBanknote.DENOMINATION, NOTHING));
+        args.putString("printYear", settingsMap.getOrDefault(ConstantsBanknote.PRINTYEAR, NOTHING));
+        args.putString("releaseDate", settingsMap.getOrDefault(ConstantsBanknote.DATE, NOTHING));
 
-        args.putStringArray("size", size);
+        args.putInt("memorablePosition", Integer.parseInt(settingsMap.getOrDefault(ConstantsBanknote.MEMORABLEPOSITION, "0")));
+        args.putInt("sizePosition", Integer.parseInt(settingsMap.getOrDefault(ConstantsBanknote.SIZEPOSITION, "0")));
+        args.putInt("turnoverPosition", Integer.parseInt(settingsMap.getOrDefault(ConstantsBanknote.TURNOVERPOSITION, "0")));
+        args.putInt("isBanknotePosition", Integer.parseInt(settingsMap.getOrDefault(ConstantsBanknote.ISBANKNOTEPOSITION, "0")));
 
-        args.putInt("memorablePosition", memorablePosition);
-        args.putInt("sizePosition", sizePosition);
-        args.putInt("turnoverPosition", turnoverPosition);
+        args.putBoolean("isHryvnya", Boolean.valueOf(settingsMap.getOrDefault(ConstantsBanknote.ISHRYVNYA, "false")));
 
         fragmentFilterDialog.setArguments(args);
 
         return fragmentFilterDialog;
     }
 
+    public void arrayListSizeToString(ArrayList<String> arrayList)
+    {
+        size = new String[arrayList.size() + 1];
+
+        size[0] = NOTHING;
+        for (int i = 0; i < arrayList.size(); ++i)
+        {
+            size[i + 1] = arrayList.get(i);
+        }
+
+        ArrayAdapter<String> sizeAdapter = new ArrayAdapter<>(getContext(), R.layout.filterdialogspinner, size);
+        sizeAdapter.setDropDownViewResource(R.layout.filterdialogspinnerlist);
+        sSize.setAdapter(sizeAdapter);
+        sSize.setSelection(getArguments().getInt("sizePosition"));
+        sSize.setClickable(true);
+    }
+
+
+    public void setSize(String type)
+    {
+        DataBaseManager.getSize(dbSize, type, () -> requireActivity().runOnUiThread(() -> arrayListSizeToString(dbSize)));
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-
-        getDialog().setTitle("Test");
         this.view = inflater.inflate(R.layout.fragment_filter_dialog, null);
+
+        tvisHryvya = view.findViewById(R.id.tvfilteddialoghryvna);
+        cbisHryvnya = view.findViewById(R.id.cbfilterDialogisHryvna);
+
+        setHryvnyaVisibility(false);
 
         etDenomination = view.findViewById(R.id.etfilterDialogDenomination);
         etPrintYear = view.findViewById(R.id.etfilterDialogPrintYear);
         etReleaseDate = view.findViewById(R.id.etfilterDialogDate);
 
+        sType = view.findViewById(R.id.sfilterDialogType);
         sMemorable = view.findViewById(R.id.sfilterDialogMemorable);
         sTurnover = view.findViewById(R.id.sfilterDialogTurnover);
         sSize = view.findViewById(R.id.sfilterDialogSize);
 
+        sSize.setClickable(false);
+
         btnCancel = view.findViewById(R.id.btnfilterdialogdecline);
         btnSearch = view.findViewById(R.id.btnfilterdialoggo);
 
-        turnover = new String[]{"", "У обігу", "Вийшла з обігу"};
-        memorable = new String[]{"", "Пам'ятна", "Не пам'ятна"};
-        size = getArguments().getStringArray("size");
+        isBanknote = new String[]{NOTHING, "Банкнота", "Монета"};
+        turnover = new String[]{NOTHING, "У обігу", "Вийшла з обігу"};
+        memorable = new String[]{NOTHING, "Пам'ятна", "Не пам'ятна"};
+
+        dbSize = new ArrayList<>();
+        setSize(isBanknote[0]);
+
 
         mainActivity = (MainActivity) getActivity();
 
@@ -91,22 +131,24 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
         etPrintYear.setText(getArguments().getString("printYear"));
         etReleaseDate.setText(getArguments().getString("releaseDate"));
 
+        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(getContext(), R.layout.filterdialogspinner, isBanknote);
         ArrayAdapter<String> memorableAdapter = new ArrayAdapter<>(getContext(), R.layout.filterdialogspinner, memorable);
         ArrayAdapter<String> turnoverAdapter = new ArrayAdapter<>(getContext(), R.layout.filterdialogspinner, turnover);
-        ArrayAdapter<String> sizeAdapter = new ArrayAdapter<>(getContext(), R.layout.filterdialogspinner, size);
 
+        typeAdapter.setDropDownViewResource(R.layout.filterdialogspinnerlist);
         memorableAdapter.setDropDownViewResource(R.layout.filterdialogspinnerlist);
         turnoverAdapter.setDropDownViewResource(R.layout.filterdialogspinnerlist);
-        sizeAdapter.setDropDownViewResource(R.layout.filterdialogspinnerlist);
 
+        sType.setAdapter(typeAdapter);
         sMemorable.setAdapter(memorableAdapter);
         sTurnover.setAdapter(turnoverAdapter);
-        sSize.setAdapter(sizeAdapter);
 
+        int i = getArguments().getInt("isBanknotePosition");
+        sType.setSelection(getArguments().getInt("isBanknotePosition"));
         sMemorable.setSelection(getArguments().getInt("memorablePosition"));
         sTurnover.setSelection(getArguments().getInt("turnoverPosition"));
-        sSize.setSelection(getArguments().getInt("sizePosition"));
 
+        sType.setOnItemSelectedListener(onItemSelectedListener);
         sMemorable.setOnItemSelectedListener(onItemSelectedListener);
         sTurnover.setOnItemSelectedListener(onItemSelectedListener);
         sSize.setOnItemSelectedListener(onItemSelectedListener);
@@ -117,14 +159,52 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
         return view;
     }
 
+    public void setHryvnyaVisibility(Boolean bool)
+    {
+
+        if (bool)
+        {
+            tvisHryvya.setVisibility(View.VISIBLE);
+            cbisHryvnya.setVisibility(View.VISIBLE);
+        } else
+        {
+            tvisHryvya.setVisibility(View.GONE);
+            cbisHryvnya.setVisibility(View.GONE);
+        }
+    }
+
 
     AdapterView.OnItemSelectedListener onItemSelectedListener = new AdapterView.OnItemSelectedListener()
     {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
         {
+            Boolean visibility = false;
             switch (parent.getId())
             {
+                case R.id.sfilterDialogType:
+                    sSize.setClickable(false);
+                    sSize.setSelection(0);
+                    if (!isBanknote[position].equals(isBanknote[0]))
+                    {
+                        if (isBanknote[position].equals(isBanknote[1]))
+                        {
+                            setSize(BANKNOTE);
+                        }
+                        if (isBanknote[position].equals(isBanknote[2]))
+                        {
+                            setSize(COIN);
+                            visibility = true;
+                            cbisHryvnya.setChecked(getArguments().getBoolean("isHryvnya"));
+                        }
+                    } else
+                    {
+                        setSize(NOTHING);
+                    }
+                    isBanknotePosition = position;
+                    setHryvnyaVisibility(visibility);
+                    Log.d("FragmentFilterDialog", "isBanknotePosition: " + position);
+                    break;
                 case R.id.sfilterDialogSize:
                     sizePosition = position;
                     Log.d("FragmentFilterDialog", "Size: " + position);
@@ -150,9 +230,12 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
 
     public void clearFilter()
     {
-        etDenomination.setText("");
-        etReleaseDate.setText("");
-        etPrintYear.setText("");
+        getArguments().clear();
+        etDenomination.setText(NOTHING);
+        etReleaseDate.setText(NOTHING);
+        etPrintYear.setText(NOTHING);
+        sType.setSelection(0);
+        cbisHryvnya.setChecked(false);
         sMemorable.setSelection(0);
         sTurnover.setSelection(0);
         sSize.setSelection(0);
@@ -165,18 +248,59 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
     {
         String[] crystalSize;
         String[] res = new String[]{etDenomination.getText().toString(), etPrintYear.getText().toString(), etReleaseDate.getText().toString()};
+
+        settingsMap.putIfAbsent(ConstantsBanknote.MEMORABLEPOSITION, String.valueOf(memorablePosition));
+        settingsMap.putIfAbsent(ConstantsBanknote.SIZEPOSITION, String.valueOf(sizePosition));
+        settingsMap.putIfAbsent(ConstantsBanknote.TURNOVERPOSITION, String.valueOf(turnoverPosition));
+        settingsMap.putIfAbsent(ConstantsBanknote.ISBANKNOTEPOSITION, String.valueOf(isBanknotePosition));
+        settingsMap.putIfAbsent(ConstantsBanknote.ISHRYVNYA, String.valueOf(cbisHryvnya.isChecked()));
+
+        try
+        {
+            if (!isBanknote[isBanknotePosition].equals(isBanknote[0]))
+            {
+                if (isBanknote[isBanknotePosition].equals(isBanknote[1]))
+                {
+                    searchMap.putIfAbsent(ConstantsBanknote.ISBANKNOTE, BANKNOTE);
+                }
+                if (isBanknote[isBanknotePosition].equals(isBanknote[2]))
+                {
+                    searchMap.putIfAbsent(ConstantsBanknote.ISBANKNOTE, COIN);
+                    if (cbisHryvnya.isChecked())
+                    {
+                        if (res[0] != null && !res[0].equals(NOTHING) && cbisHryvnya.isChecked())
+                        {
+                            settingsMap.putIfAbsent(ConstantsBanknote.DENOMINATION, res[0]);
+                            res[0] = String.valueOf(Integer.parseInt(res[0]) * 100);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        if (cbisHryvnya.isChecked() && isBanknote[isBanknotePosition].equals(isBanknote[2]))
+        {
+            searchMap.putIfAbsent(ConstantsBanknote.ISHRYVNYA, "1");
+
+        }
+
+        if (!cbisHryvnya.isChecked() && isBanknote[isBanknotePosition].equals(isBanknote[2]))
+        {
+            searchMap.putIfAbsent(ConstantsBanknote.ISHRYVNYA, "0");
+        }
+
         for (int i = 0; i < 3; ++i)
         {
-            if (!res[i].equals(""))
+            if (!res[i].equals(NOTHING))
             {
                 searchMap.putIfAbsent(i, res[i]);
                 settingsMap.putIfAbsent(i, res[i]);
             }
         }
 
-        settingsMap.putIfAbsent(ConstantsBanknote.MEMORABLEPOSITION, String.valueOf(memorablePosition));
-        settingsMap.putIfAbsent(ConstantsBanknote.SIZEPOSITION, String.valueOf(sizePosition));
-        settingsMap.putIfAbsent(ConstantsBanknote.TURNOVERPOSITION, String.valueOf(turnoverPosition));
 
         try
         {
@@ -188,7 +312,7 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
                 }
                 if (memorable[memorablePosition].equals(memorable[2]))
                 {
-                    searchMap.putIfAbsent(ConstantsBanknote.MEMORABLE, "");
+                    searchMap.putIfAbsent(ConstantsBanknote.MEMORABLE, NOTHING);
 
                 }
             }
@@ -217,7 +341,7 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
         if (!(size == null))
         {
 
-            if (!size[sizePosition].equals(""))
+            if (!size[sizePosition].equals(NOTHING))
             {
                 crystalSize = (size[sizePosition]).split("[А-я]");
                 crystalSize = crystalSize[0].split("\\s");

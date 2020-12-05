@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -30,18 +29,18 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
 {
     private View view;
     private Boolean isDenomination = true;
+    private int isBanknote = 1;
     private ListView listView;
-    private Button switchButton;
+    private Button btnSwitchDenomination, btnSwitchType;
     private AdapterView.OnItemClickListener onItemClickListener;
     private FragmentCatalogueItems fragmentCatalogueItems;
-    private String[] denominationYear;
+    private String[] denominationYear, type;
     private ArrayList<String> catalogueList;
     private Map<Integer, String> searchMap;
     private List<ShortBanknoteInfo> shortBanknoteInfoList;
 
     public FragmentCatalogue()
     {
-        // Required empty public constructor
     }
 
     @Override
@@ -51,16 +50,20 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
         {
             this.view = inflater.inflate(R.layout.fragment_catalogue, container, false);
             listView = view.findViewById(R.id.lvcatalogue);
-            switchButton = view.findViewById(R.id.btncatalogueswitch);
+            btnSwitchDenomination = view.findViewById(R.id.btncataloguedenominyearswitch);
+            btnSwitchType = view.findViewById(R.id.btncatalogueswitchtype);
 
             shortBanknoteInfoList = new ArrayList<>();
             catalogueList = new ArrayList<>();
             searchMap = new HashMap<>();
-            denominationYear = new String[]{"Номінал", "Рік друку"};
+            denominationYear = new String[]{"Номінал", "Рік створення"};
+            type = new String[]{"Банкнота", "Монета"};
 
 
-            switchButton.setText(denominationYear[1]);
-            switchButton.setOnClickListener(this);
+            btnSwitchDenomination.setText(denominationYear[1]);
+            btnSwitchType.setText(type[1]);
+            btnSwitchDenomination.setOnClickListener(this);
+            btnSwitchType.setOnClickListener(this);
 
             catalogueListManager();
 
@@ -78,15 +81,35 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
 
         onItemClickListener = (parent, view, position, id) -> {
 
+            String[] result, denominationCheck;
             String selected = (String) parent.getItemAtPosition(position);
+
+            result = selected.split("\\s[A-і]");
+            if (isBanknote == 0)
+            {
+                denominationCheck = selected.split("[^Г,К]");
+                for (String s : denominationCheck)
+                {
+                    denominationCheck[0] += s;
+                }
+
+                if (isDenomination && denominationCheck[0].equals("Г"))
+                {
+                    result[0] = String.valueOf(Integer.parseInt(result[0]) * 100);
+                }
+            }
+
+
             Log.d("Catalogue", selected);
+
+            searchMap.put(ConstantsBanknote.ISBANKNOTE, String.valueOf(isBanknote));
 
             if (isDenomination)
             {
-                searchMap.put(ConstantsBanknote.DENOMINATION, selected);
+                searchMap.put(ConstantsBanknote.DENOMINATION, result[0]);
             } else
             {
-                searchMap.put(ConstantsBanknote.PRINTYEAR, selected);
+                searchMap.put(ConstantsBanknote.PRINTYEAR, result[0]);
             }
 
             DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchMap, () -> requireActivity().runOnUiThread(() -> fragmentCatalogueItems.setContent(shortBanknoteInfoList)));
@@ -101,7 +124,7 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
     {
         try
         {
-            DataBaseManager.getDenominationOrPrintYear(catalogueList, isDenomination, () -> requireActivity().runOnUiThread(() -> setCatalogueList(catalogueList)));
+            DataBaseManager.getDenominationOrPrintYear(catalogueList, isDenomination, isBanknote, () -> requireActivity().runOnUiThread(() -> setCatalogueList(catalogueList)));
             catalogueList.clear();
         } catch (Exception e)
         {
@@ -114,17 +137,31 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View v)
     {
-        if (v.getId() == R.id.btncatalogueswitch)
+        switch (v.getId())
         {
-            if (isDenomination)
-            {
-                switchButton.setText(denominationYear[0]);
-            } else
-            {
-                switchButton.setText(denominationYear[1]);
-            }
-            isDenomination = !isDenomination;
-            catalogueListManager();
+            case R.id.btncatalogueswitchtype:
+                if (isBanknote == 1)
+                {
+                    btnSwitchType.setText(type[0]);
+                    isBanknote = 0;
+                } else
+                {
+                    btnSwitchType.setText(type[1]);
+                    isBanknote = 1;
+                }
+                catalogueListManager();
+                break;
+            case R.id.btncataloguedenominyearswitch:
+                if (isDenomination)
+                {
+                    btnSwitchDenomination.setText(denominationYear[0]);
+                } else
+                {
+                    btnSwitchDenomination.setText(denominationYear[1]);
+                }
+                isDenomination = !isDenomination;
+                catalogueListManager();
+                break;
         }
     }
 }

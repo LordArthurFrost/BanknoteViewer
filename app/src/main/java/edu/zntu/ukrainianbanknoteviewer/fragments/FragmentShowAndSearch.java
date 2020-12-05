@@ -1,5 +1,6 @@
 package edu.zntu.ukrainianbanknoteviewer.fragments;
 
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,12 +40,10 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     private FragmentFilterDialog fragmentFilterDialog;
     private ShortBanknoteInfoAdapter shortBanknoteInfoAdapter;
     private AdapterView.OnItemClickListener onItemClickListener;
-    private static String[] size;
 
 
     public FragmentShowAndSearch()
     {
-        // Required empty public constructor
     }
 
 
@@ -66,50 +65,21 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
             btnFilters = view.findViewById(R.id.btnsearchfilter);
             btnFilters.setOnClickListener(this);
             ArrayList<String> data = new ArrayList<>();
-            ArrayList<String> dbsize = new ArrayList<>();
 
             try
             {
-                DataBaseManager.getSize(dbsize, () -> requireActivity().runOnUiThread(() -> arrayListSizetoString(dbsize)));
-
                 DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
 
             } catch (Exception e)
             {
                 e.printStackTrace();
             }
-
-       /* DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                requireActivity().runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        test();
-                    }
-                });
-            }
-        });*/
-
         }
         return view;
     }
 
 
-    public void arrayListSizetoString(ArrayList<String> arrayList)
-    {
-        size = new String[arrayList.size() + 1];
 
-        size[0] = "";
-        for (int i = 0; i < arrayList.size(); ++i)
-        {
-            size[i + 1] = arrayList.get(i);
-        }
-    }
 
 
     public void clearInput()
@@ -161,18 +131,47 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
         this.autoCompleteTextView = view.findViewById(R.id.autoCompleteEditText);
         autoCompleteTextView.setAdapter(new ArrayAdapter<>(getContext(), R.layout.custom_list_item, R.id.text_view_list_item, data));
-        autoCompleteTextView.setThreshold(1);
+        autoCompleteTextView.setThreshold(2);
 
         autoCompleteTextView.setOnEditorActionListener((v, actionId, event) -> {
-            String[] getSearch;
+            String[] getSearch, denominationCheck;
             String result;
             StringBuilder calculateSearch = new StringBuilder();
             if ((actionId == EditorInfo.IME_ACTION_PREVIOUS))
             {
                 result = autoCompleteTextView.getText().toString();
+
+                if (result.equals("Egg") || result.equals("egg"))
+                {
+                    searchMap.put(ConstantsBanknote.IDINFO, ConstantsBanknote.EGG_ID);
+
+                    startSearch(searchMap);
+
+                    return true;
+                }
+
                 Log.d("FragmentShow", result);
 
                 getSearch = result.split("\\s+([A-і])\\w+");
+
+                denominationCheck = result.split("[^Г,К]");
+                for (String s : denominationCheck)
+                {
+                    denominationCheck[0] += s;
+                }
+
+                if (!(denominationCheck.length == 0))
+                {
+                    if (denominationCheck[0].equals("Г") || denominationCheck[0].equals("г"))
+                    {
+                        searchMap.put(ConstantsBanknote.ISBANKNOTE, "1");
+                    }
+                    if (denominationCheck[0].equals("К") || denominationCheck[0].equals("к"))
+                    {
+                        searchMap.put(ConstantsBanknote.ISBANKNOTE, "0");
+                    }
+                }
+
                 for (String string : getSearch)
                 {
                     calculateSearch.append(string);
@@ -229,7 +228,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     public void onClick(View v)
     {
 
-        fragmentFilterDialog = (FragmentFilterDialog) FragmentFilterDialog.newInstance(settingsMap.getOrDefault(ConstantsBanknote.DENOMINATION, ""), settingsMap.getOrDefault(ConstantsBanknote.PRINTYEAR, ""), settingsMap.getOrDefault(ConstantsBanknote.DATE, ""), size, Integer.parseInt(settingsMap.getOrDefault(ConstantsBanknote.MEMORABLEPOSITION, "0")), Integer.parseInt(settingsMap.getOrDefault(ConstantsBanknote.SIZEPOSITION, "0")), Integer.parseInt(settingsMap.getOrDefault(ConstantsBanknote.TURNOVERPOSITION, "0")));
+        fragmentFilterDialog = (FragmentFilterDialog) FragmentFilterDialog.newInstance(settingsMap);
 
         if (v.getId() == R.id.btnsearchfilter)
         {
