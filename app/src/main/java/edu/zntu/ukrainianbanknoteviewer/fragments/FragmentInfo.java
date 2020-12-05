@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import org.jetbrains.annotations.NotNull;
+
 import edu.zntu.ukrainianbanknoteviewer.R;
 import edu.zntu.ukrainianbanknoteviewer.managers.ImageManager;
 
@@ -23,7 +25,7 @@ public class FragmentInfo extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         if (view == null)
         {

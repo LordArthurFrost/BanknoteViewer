@@ -1,6 +1,7 @@
 package edu.zntu.ukrainianbanknoteviewer;
 
 import android.os.Bundle;
+import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -18,8 +19,6 @@ import edu.zntu.ukrainianbanknoteviewer.managers.DataBaseManager;
 import edu.zntu.ukrainianbanknoteviewer.managers.FragmentHelper;
 import edu.zntu.ukrainianbanknoteviewer.managers.ImageManager;
 
-import static java.lang.Thread.sleep;
-
 public class MainActivity extends AppCompatActivity
 {
     private FragmentCatalogue fragmentCatalogue;
@@ -36,6 +35,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         fragmentCatalogue = new FragmentCatalogue();
+
+
         fragmentInfo = new FragmentInfo();
         fragmentShowAndSearch = new FragmentShowAndSearch();
         fragmentShowBanknote = new FragmentShowBanknote();

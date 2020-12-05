@@ -11,6 +11,8 @@ import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,9 +45,8 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-
         if (view == null)
         {
             this.view = inflater.inflate(R.layout.fragment_catalogue, container, false);
@@ -164,4 +165,5 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
                 break;
         }
     }
+
 }
