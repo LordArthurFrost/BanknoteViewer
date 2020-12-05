@@ -20,11 +20,11 @@ public class FragmentHelper
     }
 
     //метод открытия фрагмента
-    public static void openFragment(Fragment fragment)
+    public static void openFragment(Fragment fragmentOpen)
     {
         fragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out)
-                .replace(R.id.main_fragment, fragment)
+                .replace(R.id.main_fragment, fragmentOpen)
                 .addToBackStack(null)
                 .commit();
     }

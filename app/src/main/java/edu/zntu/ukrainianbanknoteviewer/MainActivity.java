@@ -35,6 +35,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        fragmentCatalogue = new FragmentCatalogue();
+        fragmentInfo = new FragmentInfo();
+        fragmentShowAndSearch = new FragmentShowAndSearch();
+        fragmentShowBanknote = new FragmentShowBanknote();
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentHelper.init(fm, this);
@@ -64,10 +68,6 @@ public class MainActivity extends AppCompatActivity
     public void setNavigationBar()
     {
         Map<Integer, String> randomMap = new HashMap<>();
-        fragmentCatalogue = new FragmentCatalogue();
-        fragmentInfo = new FragmentInfo();
-        fragmentShowAndSearch = new FragmentShowAndSearch();
-        fragmentShowBanknote = new FragmentShowBanknote();
         FragmentHelper.changeFragment(fragmentCatalogue);
         BottomNavigationView bottomNavigationView = findViewById(R.id.main_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {

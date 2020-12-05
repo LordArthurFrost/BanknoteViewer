@@ -1,9 +1,6 @@
 package edu.zntu.ukrainianbanknoteviewer.fragments;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,9 +45,11 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+
         if (view == null)
         {
             this.view = inflater.inflate(R.layout.fragment_catalogue, container, false);
+
             listView = view.findViewById(R.id.lvcatalogue);
             btnSwitchDenomination = view.findViewById(R.id.btncataloguedenominyearswitch);
             btnSwitchType = view.findViewById(R.id.btncatalogueswitchtype);
@@ -69,7 +70,6 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
 
             fragmentCatalogueItems = new FragmentCatalogueItems();
         }
-
         return view;
     }
 

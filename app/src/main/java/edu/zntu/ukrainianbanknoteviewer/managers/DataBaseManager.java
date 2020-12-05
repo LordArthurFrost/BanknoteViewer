@@ -28,6 +28,23 @@ public class DataBaseManager extends SQLiteOpenHelper
     private static String DATABASE_PATH;
     private static SQLiteDatabase sqLiteDatabase;
     private final Context context;
+    private static Thread currentThread;
+
+
+    private static void cancelThread()
+    {
+        if (currentThread != null)
+        {
+            currentThread.interrupt();
+            try
+            {
+                currentThread.join();
+            } catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
     public static String fixDenomination(int denomination, int type)
@@ -79,7 +96,8 @@ public class DataBaseManager extends SQLiteOpenHelper
 
     public static void getAllInformation(final Map<Integer, String> map, Runnable runnable)
     {
-        new Thread(() -> {
+        cancelThread();
+        currentThread = new Thread(() -> {
             int randomRow;
             Random random = new Random();
             Cursor cursor = sqLiteDatabase.rawQuery("select main._id, main.denomination, main.printYear, main.date, description.front, description.back,description.protection, description.extra, main.size, main.turnover, main.Memorable, main.isBanknote, main.isBanknote " +
@@ -120,20 +138,26 @@ public class DataBaseManager extends SQLiteOpenHelper
             map.put(ConstantsBanknote.SIZEINFO, cursor.getString(cursor.getColumnIndex("size")));
             map.put(ConstantsBanknote.ISBANKNOTE, cursor.getString(cursor.getColumnIndex("isBanknote")));
             cursor.close();
-            runnable.run();
-        }).start();
+
+            if (!currentThread.isInterrupted())
+            {
+                runnable.run();
+            }
+        });
+        currentThread.start();
     }
 
 
     public static void getAutocompleteEditText(final ArrayList<String> autocompleteEditText, Runnable runnable)
     {
-        new Thread(() -> {
+        cancelThread();
+        currentThread = new Thread(() -> {
             Cursor cursor = sqLiteDatabase.rawQuery("select main.denomination, main.printYear, main.isBanknote " +
                     "from main", null);
 
             cursor.moveToFirst();
             int i = 0, denomination, isBanknote;
-            while (cursor.moveToNext())
+            while (cursor.moveToNext() && !currentThread.isInterrupted())
             {
                 denomination = Integer.parseInt(cursor.getString(cursor.getColumnIndex("denomination")));
                 isBanknote = Integer.parseInt(cursor.getString(cursor.getColumnIndex("isBanknote")));
@@ -141,15 +165,21 @@ public class DataBaseManager extends SQLiteOpenHelper
                 ++i;
             }
             cursor.close();
-            runnable.run();
-        }).start();
-
+            if (!currentThread.isInterrupted())
+            {
+                runnable.run();
+            }
+        });
+        currentThread.start();
     }
 
 
     public static void getSize(final ArrayList<String> stringArrayList, String type, Runnable runnable)
     {
-        new Thread(() -> {
+        cancelThread();
+        currentThread = new Thread(() -> {
+            Thread currentThread = Thread.currentThread();
+
             Cursor cursor;
 
             stringArrayList.clear();
@@ -162,57 +192,70 @@ public class DataBaseManager extends SQLiteOpenHelper
                 cursor = sqLiteDatabase.rawQuery("select distinct main.size, main.isBanknote from main where main.isBanknote = ?", new String[]{type});
             }
 
-            cursor.moveToFirst();
 
-            while (cursor.moveToNext())
+            while (cursor.moveToNext() && !currentThread.isInterrupted())
             {
+
                 stringArrayList.add(cursor.getString(cursor.getColumnIndex("size")) + " мм");
             }
+
             cursor.close();
-            runnable.run();
-        }).start();
+
+            if (!currentThread.isInterrupted())
+            {
+                runnable.run();
+            }
+        });
+        currentThread.start();
     }
 
 
     public static void getDenominationOrPrintYear(final ArrayList<String> arrayList, Boolean isDenomination, int isBanknote, Runnable runnable)
     {
-        new Thread(() -> {
+        cancelThread();
+        currentThread = new Thread(() -> {
             Cursor cursor;
             String selectedColumn;
+
+
 
             if (isDenomination)
             {
                 cursor = sqLiteDatabase.rawQuery("select distinct main.denomination, main.isBanknote from main where main.isBanknote = ?", new String[]{String.valueOf(isBanknote)});
                 selectedColumn = "denomination";
-                cursor.moveToFirst();
-                do
+
+                while (cursor.moveToNext() && !currentThread.isInterrupted())
                 {
                     arrayList.add(fixDenomination(Integer.parseInt(cursor.getString(cursor.getColumnIndex(selectedColumn))),
                             Integer.parseInt(cursor.getString(cursor.getColumnIndex("isBanknote")))));
-                } while (cursor.moveToNext());
+                }
             } else
             {
-                cursor = sqLiteDatabase.rawQuery("select distinct main.printYear, main.isBanknote from main where main.isBanknote = ? order by main.printYear", new String[]{String.valueOf(isBanknote)});
+                cursor = sqLiteDatabase.rawQuery("select distinct main.printYear, main.isBanknote from main where main.isBanknote = ?", new String[]{String.valueOf(isBanknote)});
                 selectedColumn = "printYear";
-                cursor.moveToFirst();
-                do
+
+                while (cursor.moveToNext() && !currentThread.isInterrupted())
                 {
                     arrayList.add(cursor.getString(cursor.getColumnIndex(selectedColumn)) + " рік");
-                } while (cursor.moveToNext());
+                }
             }
             cursor.close();
-            runnable.run();
-        }).start();
-
+            if (!currentThread.isInterrupted())
+            {
+                runnable.run();
+            }
+        });
+        currentThread.start();
     }
 
 
     public static void fillShortBanknoteInfoList(final List<ShortBanknoteInfo> shortBanknoteInfoList, Map<Integer, String> map, Runnable runnable)
     {
-        new Thread(() -> {
+        cancelThread();
+        currentThread = new Thread(() -> {
             StringBuilder basicQuery = new StringBuilder("select main._id, main.denomination, main.printYear, main.date, main.memorable, main.size, main.turnover, main.isBanknote from main ");
             int counter = 0;
-            Cursor cursor;
+            Cursor cursor = null;
             if (map != null)
             {
                 for (String value : map.values())
@@ -233,6 +276,12 @@ public class DataBaseManager extends SQLiteOpenHelper
 
                 for (Integer i : map.keySet())
                 {
+                    if (currentThread.isInterrupted())
+                    {
+                        cursor.close();
+                        return;
+                    }
+
                     if (!Objects.equals(map.getOrDefault(i, ""), ""))
                     {
                         if (counter != 0)
@@ -315,11 +364,10 @@ public class DataBaseManager extends SQLiteOpenHelper
             }
 
 
-            cursor.moveToFirst();
             counter = 0;
             String memorable, turnover;
 
-            do
+            while (cursor.moveToNext() && !currentThread.isInterrupted())
             {
                 try
                 {
@@ -351,16 +399,23 @@ public class DataBaseManager extends SQLiteOpenHelper
                 {
                     e.printStackTrace();
                 }
-            } while (cursor.moveToNext());
-            runnable.run();
+            }
             cursor.close();
-        }).start();
+
+            if (!currentThread.isInterrupted())
+            {
+                runnable.run();
+            }
+
+        });
+        currentThread.start();
     }
 
 
     public static void searchToShowTransfer(final Map<Integer, String> transferMap, Runnable runnable)
     {
-        new Thread(() -> {
+        cancelThread();
+        currentThread = new Thread(() -> {
             Cursor cursor;
             String basicQuery = "select main.size, description.front, description.back, description.protection, description.extra " +
                     "from main, description " +
@@ -374,10 +429,13 @@ public class DataBaseManager extends SQLiteOpenHelper
             transferMap.put(ConstantsBanknote.SIZEINFO, cursor.getString(cursor.getColumnIndex("size")));
 
             cursor.close();
-            runnable.run();
+            if (!currentThread.isInterrupted())
+            {
+                runnable.run();
+            }
+        });
 
-        }).start();
-
+        currentThread.start();
     }
 
 

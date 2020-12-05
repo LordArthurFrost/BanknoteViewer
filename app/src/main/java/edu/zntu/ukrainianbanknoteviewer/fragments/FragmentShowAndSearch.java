@@ -56,6 +56,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+
         if (view == null)
         {
             view = inflater.inflate(R.layout.fragment_show_and_search, container, false);
@@ -66,20 +67,10 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
             btnFilters.setOnClickListener(this);
             ArrayList<String> data = new ArrayList<>();
 
-            try
-            {
-                DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
-
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+            DataBaseManager.getAutocompleteEditText(data, () -> requireActivity().runOnUiThread(() -> setAutoCompleteView(data)));
         }
         return view;
     }
-
-
-
 
 
     public void clearInput()
@@ -90,11 +81,11 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
     }
 
 
-    public void startSearch(Map<Integer, String> searchmap)
+    public void startSearch(Map<Integer, String> searchMap)
     {
         autoCompleteTextView.setText("");
-        this.searchMap = searchmap;
-        DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchmap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
+        this.searchMap = searchMap;
+        DataBaseManager.fillShortBanknoteInfoList(shortBanknoteInfoList, searchMap, () -> requireActivity().runOnUiThread(() -> setBanknoteList()));
     }
 
 

@@ -1,15 +1,14 @@
 package edu.zntu.ukrainianbanknoteviewer.fragments;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -91,20 +90,23 @@ public class FragmentShowBanknote extends Fragment
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        view = inflater.inflate(R.layout.fragment_show_banknote, container, false);
-        tvDenomination = view.findViewById(R.id.tvshowdenomination);
-        tvPrintYear = view.findViewById(R.id.tvshowprintyear);
-        tvReleaseDate = view.findViewById(R.id.tvshowreleaseDate);
-        tvTurnover = view.findViewById(R.id.tvshowturnover);
-        ivBanknote = view.findViewById(R.id.ivshowimage);
-        tvMemorable = view.findViewById(R.id.tvshowmenorable);
+        if (view == null)
+        {
+            view = inflater.inflate(R.layout.fragment_show_banknote, container, false);
+            tvDenomination = view.findViewById(R.id.tvshowdenomination);
+            tvPrintYear = view.findViewById(R.id.tvshowprintyear);
+            tvReleaseDate = view.findViewById(R.id.tvshowreleaseDate);
+            tvTurnover = view.findViewById(R.id.tvshowturnover);
+            ivBanknote = view.findViewById(R.id.ivshowimage);
+            tvMemorable = view.findViewById(R.id.tvshowmenorable);
 
-        progressBar = view.findViewById(R.id.showProgressBar);
+            progressBar = view.findViewById(R.id.showProgressBar);
 
-        tvSize = view.findViewById(R.id.tvshowsize);
-        tvDescription = view.findViewById(R.id.tvshowdescription);
-        tvExtra = view.findViewById(R.id.tvshowextra);
-        tvProtection = view.findViewById(R.id.tvshowprotection);
+            tvSize = view.findViewById(R.id.tvshowsize);
+            tvDescription = view.findViewById(R.id.tvshowdescription);
+            tvExtra = view.findViewById(R.id.tvshowextra);
+            tvProtection = view.findViewById(R.id.tvshowprotection);
+        }
 
 
         //Checking photograph
