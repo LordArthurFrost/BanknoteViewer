@@ -33,7 +33,8 @@
             <Button
                 android:id="@+id/btnsearchfilter"
                 style="@style/Buttons"
-                android:text="@string/search_filter" />
+                android:text="@string/search_filter"
+                android:background="@drawable/roundbutton"/>
         </LinearLayout>
 
 
