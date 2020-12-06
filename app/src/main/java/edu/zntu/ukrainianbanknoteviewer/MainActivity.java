@@ -35,14 +35,15 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         fragmentCatalogue = new FragmentCatalogue();
-
-
         fragmentInfo = new FragmentInfo();
         fragmentShowAndSearch = new FragmentShowAndSearch();
         fragmentShowBanknote = new FragmentShowBanknote();
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentHelper.init(fm, this);
+
+        FragmentHelper.changeFragment(fragmentCatalogue);
+
         setNavigationBar();
         FragmentHelper.openFragment(fragmentCatalogue);
         DataBaseManager dataBaseManager = new DataBaseManager(this);
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity
     public void setNavigationBar()
     {
         Map<Integer, String> randomMap = new HashMap<>();
-        FragmentHelper.changeFragment(fragmentCatalogue);
         BottomNavigationView bottomNavigationView = findViewById(R.id.main_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId())
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity
                 case R.id.nav_random:
                     DataBaseManager.getAllInformation(randomMap, () -> runOnUiThread(() -> fragmentShowBanknote.setBanknoteInfo(randomMap)));
                     randomMap.clear();
-                    FragmentHelper.openFragment(fragmentShowBanknote);
+                    FragmentHelper.changeFragment(fragmentShowBanknote);
                     break;
                 case R.id.nav_search:
                     FragmentHelper.changeFragment(fragmentShowAndSearch);

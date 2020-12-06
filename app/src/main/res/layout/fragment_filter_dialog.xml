@@ -30,14 +30,15 @@
         <TextView
             style="@style/TextViewDialog"
             android:layout_row="0"
-            android:text="Тип:" />
+            android:text="@string/tvfilterDialogType" />
 
         <TextView
             android:id="@+id/tvfilteddialoghryvna"
             style="@style/TextViewDialog"
             android:layout_row="1"
-            android:text="Гривня:"
-            android:layout_marginTop="6dp"/>
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginTop="6dp"
+            android:text="@string/tvfilterDialogIsHryvnya" />
 
         <TextView
             style="@style/TextViewDialog"
@@ -47,6 +48,7 @@
         <TextView
             style="@style/TextViewDialog"
             android:layout_row="3"
+            android:id="@+id/tvfilterdialogprintyear"
             android:text="@string/tvfilterDialogPrintYear" />
 
         <TextView
@@ -92,10 +94,10 @@
             android:id="@+id/cbfilterDialogisHryvna"
             style="@style/DialogSpinnerWhite"
             android:layout_row="1"
+            android:layout_marginTop="6dp"
             android:buttonTint="@color/white"
             android:gravity="center_horizontal"
-            android:textColor="@color/white"
-            android:layout_marginTop="6dp"/>
+            android:textColor="@color/white" />
 
         <EditText
             android:id="@+id/etfilterDialogDenomination"

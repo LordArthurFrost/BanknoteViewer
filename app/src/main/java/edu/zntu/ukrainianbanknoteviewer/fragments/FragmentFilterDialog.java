@@ -38,8 +38,8 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
     private static final String BANKNOTE = "1", COIN = "0", NOTHING = "";
     private MainActivity mainActivity;
     private Map<Integer, String> searchMap, settingsMap;
-    private TextView tvisHryvya;
-    private CheckBox cbisHryvnya;
+    private TextView tvIsHryvnya, tvPrintYear;
+    private CheckBox cbIsHryvnya;
     ArrayList<String> dbSize;
 
     public FragmentFilterDialog()
@@ -95,8 +95,9 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
     {
         this.view = inflater.inflate(R.layout.fragment_filter_dialog, null);
 
-        tvisHryvya = view.findViewById(R.id.tvfilteddialoghryvna);
-        cbisHryvnya = view.findViewById(R.id.cbfilterDialogisHryvna);
+        tvPrintYear = view.findViewById(R.id.tvfilterdialogprintyear);
+        tvIsHryvnya = view.findViewById(R.id.tvfilteddialoghryvna);
+        cbIsHryvnya = view.findViewById(R.id.cbfilterDialogisHryvna);
 
         setHryvnyaVisibility(false);
 
@@ -164,12 +165,12 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
 
         if (bool)
         {
-            tvisHryvya.setVisibility(View.VISIBLE);
-            cbisHryvnya.setVisibility(View.VISIBLE);
+            tvIsHryvnya.setVisibility(View.VISIBLE);
+            cbIsHryvnya.setVisibility(View.VISIBLE);
         } else
         {
-            tvisHryvya.setVisibility(View.GONE);
-            cbisHryvnya.setVisibility(View.GONE);
+            tvIsHryvnya.setVisibility(View.GONE);
+            cbIsHryvnya.setVisibility(View.GONE);
         }
     }
 
@@ -179,7 +180,7 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
         {
-            Boolean visibility = false;
+            boolean visibility = false;
             switch (parent.getId())
             {
                 case R.id.sfilterDialogType:
@@ -195,7 +196,7 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
                         {
                             setSize(COIN);
                             visibility = true;
-                            cbisHryvnya.setChecked(getArguments().getBoolean("isHryvnya"));
+                            cbIsHryvnya.setChecked(getArguments().getBoolean("isHryvnya"));
                         }
                     } else
                     {
@@ -235,7 +236,7 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
         etReleaseDate.setText(NOTHING);
         etPrintYear.setText(NOTHING);
         sType.setSelection(0);
-        cbisHryvnya.setChecked(false);
+        cbIsHryvnya.setChecked(false);
         sMemorable.setSelection(0);
         sTurnover.setSelection(0);
         sSize.setSelection(0);
@@ -253,7 +254,7 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
         settingsMap.putIfAbsent(ConstantsBanknote.SIZEPOSITION, String.valueOf(sizePosition));
         settingsMap.putIfAbsent(ConstantsBanknote.TURNOVERPOSITION, String.valueOf(turnoverPosition));
         settingsMap.putIfAbsent(ConstantsBanknote.ISBANKNOTEPOSITION, String.valueOf(isBanknotePosition));
-        settingsMap.putIfAbsent(ConstantsBanknote.ISHRYVNYA, String.valueOf(cbisHryvnya.isChecked()));
+        settingsMap.putIfAbsent(ConstantsBanknote.ISHRYVNYA, String.valueOf(cbIsHryvnya.isChecked()));
 
         try
         {
@@ -266,9 +267,9 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
                 if (isBanknote[isBanknotePosition].equals(isBanknote[2]))
                 {
                     searchMap.putIfAbsent(ConstantsBanknote.ISBANKNOTE, COIN);
-                    if (cbisHryvnya.isChecked())
+                    if (cbIsHryvnya.isChecked())
                     {
-                        if (res[0] != null && !res[0].equals(NOTHING) && cbisHryvnya.isChecked())
+                        if (res[0] != null && !res[0].equals(NOTHING) && cbIsHryvnya.isChecked())
                         {
                             settingsMap.putIfAbsent(ConstantsBanknote.DENOMINATION, res[0]);
                             res[0] = String.valueOf(Integer.parseInt(res[0]) * 100);
@@ -281,13 +282,13 @@ public class FragmentFilterDialog extends DialogFragment implements View.OnClick
             e.printStackTrace();
         }
 
-        if (cbisHryvnya.isChecked() && isBanknote[isBanknotePosition].equals(isBanknote[2]))
+        if (cbIsHryvnya.isChecked() && isBanknote[isBanknotePosition].equals(isBanknote[2]))
         {
             searchMap.putIfAbsent(ConstantsBanknote.ISHRYVNYA, "1");
 
         }
 
-        if (!cbisHryvnya.isChecked() && isBanknote[isBanknotePosition].equals(isBanknote[2]))
+        if (!cbIsHryvnya.isChecked() && isBanknote[isBanknotePosition].equals(isBanknote[2]))
         {
             searchMap.putIfAbsent(ConstantsBanknote.ISHRYVNYA, "0");
         }

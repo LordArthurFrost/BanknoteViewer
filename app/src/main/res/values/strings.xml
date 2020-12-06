@@ -14,7 +14,7 @@
     <string name="bottom_nav_info">Info</string>
     <string name="search_example">Наприклад, 1 гривня 1994</string>
     <string name="tvfilterDialogDenomination">Номінал:</string>
-    <string name="tvfilterDialogPrintYear">Рік початку друку:</string>
+    <string name="tvfilterDialogPrintYear">Рік створення:</string>
     <string name="tvfilterDialogDate">Дата випуску:</string>
     <string name="tvfilterDialogSize">Розмір:</string>
     <string name="tvfilterDialogMemorable">Пам\'ятна:</string>
@@ -22,4 +22,6 @@
     <string name="btnfilterDialogAccept">Застосувати</string>
     <string name="btnfilterDialogDecline">Зкинути</string>
     <string name="tvfilterDialogTitle">Налаштуйте фільтри</string>
+    <string name="tvfilterDialogType">Тип:</string>
+    <string name="tvfilterDialogIsHryvnya">Гривня:</string>
 </resources>

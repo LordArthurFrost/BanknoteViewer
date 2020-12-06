@@ -221,7 +221,7 @@ public class DataBaseManager extends SQLiteOpenHelper
 
             if (isDenomination)
             {
-                cursor = sqLiteDatabase.rawQuery("select distinct main.denomination, main.isBanknote from main where main.isBanknote = ?", new String[]{String.valueOf(isBanknote)});
+                cursor = sqLiteDatabase.rawQuery("select distinct main.denomination, main.isBanknote from main where main.isBanknote = ? order by main.denomination", new String[]{String.valueOf(isBanknote)});
                 selectedColumn = "denomination";
 
                 while (cursor.moveToNext() && !currentThread.isInterrupted())
@@ -231,7 +231,7 @@ public class DataBaseManager extends SQLiteOpenHelper
                 }
             } else
             {
-                cursor = sqLiteDatabase.rawQuery("select distinct main.printYear, main.isBanknote from main where main.isBanknote = ?", new String[]{String.valueOf(isBanknote)});
+                cursor = sqLiteDatabase.rawQuery("select distinct main.printYear, main.isBanknote from main where main.isBanknote = ? order by main.printYear", new String[]{String.valueOf(isBanknote)});
                 selectedColumn = "printYear";
 
                 while (cursor.moveToNext() && !currentThread.isInterrupted())
