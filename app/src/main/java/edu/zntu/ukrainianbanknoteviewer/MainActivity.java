@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity
         FragmentHelper.changeFragment(fragmentCatalogue);
 
         setNavigationBar();
-        FragmentHelper.openFragment(fragmentCatalogue);
         DataBaseManager dataBaseManager = new DataBaseManager(this);
         imageManager = new ImageManager(this);
     }
