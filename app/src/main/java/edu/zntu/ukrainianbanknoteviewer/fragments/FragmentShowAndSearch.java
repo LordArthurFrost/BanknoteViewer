@@ -144,9 +144,13 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
 
                 getSearch = result.split("\\s+([A-і])\\w+");
 
-                denominationCheck = result.split("[^Г,К]");
+                denominationCheck = result.split("[^ГгКк]");
                 for (String s : denominationCheck)
                 {
+                    if(!denominationCheck[0].equals(""))
+                    {
+                        break;
+                    }
                     denominationCheck[0] += s;
                 }
 
@@ -166,7 +170,8 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
                 {
                     calculateSearch.append(string);
                 }
-                getSearch = calculateSearch.toString().split("\\s");
+                getSearch = calculateSearch.toString().split("\\s[A-і]");
+                getSearch = getSearch[0].split("\\s");
 
                 switch (getSearch.length)
                 {
@@ -176,6 +181,7 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
                             if (getSearch[0].equals("1000"))
                             {
                                 searchMap.put(ConstantsBanknote.DENOMINATION, getSearch[0]);
+                                searchMap.put(ConstantsBanknote.ISBANKNOTE, "1");
                                 break;
                             }
                             searchMap.put(ConstantsBanknote.PRINTYEAR, getSearch[0]);
