@@ -131,9 +131,8 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
         {
             e.printStackTrace();
         }
-
-
     }
+
 
     @Override
     public void onClick(View v)
@@ -165,5 +164,4 @@ public class FragmentCatalogue extends Fragment implements View.OnClickListener
                 break;
         }
     }
-
 }

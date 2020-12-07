@@ -210,7 +210,6 @@ public class FragmentShowAndSearch extends Fragment implements View.OnClickListe
             }
             return false;
         });
-
     }
 
 

@@ -62,12 +62,11 @@ public class ImageManager
             if (!file.exists())
             {
                 Log.d("ImageManager", "CreatingLocalArchive");
-                //получаем локальную бд как поток
+
                 inputStream = context.getAssets().open(ARCHIVE_NAME);
-                // Путь к новой бд
+
                 String outFileName = IMAGE_PATH;
 
-                // Открываем пустую бд
                 outputStream = new FileOutputStream(outFileName);
 
                 // побайтово копируем данные
